@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       </Stack>
     </Container>
   ),
-  errorComponent: ({ error }: { error: any }) => (
+  errorComponent: ({ error }: { error: Error }) => (
     <Container py="xl">
       <Stack align="center" gap="md">
         <Title order={1}>Something went wrong</Title>

@@ -13,7 +13,7 @@ const config = defineConfig({
       name: "workaround-injected-head-scripts",
       resolveId(id) {
         if (id === "tanstack-start-injected-head-scripts:v") {
-          return "\0" + id;
+          return `\0${id}`;
         }
       },
       load(id) {

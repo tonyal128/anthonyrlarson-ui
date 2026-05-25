@@ -1,10 +1,10 @@
-import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // Mock matchMedia for Mantine and Theme logic
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -14,16 +14,16 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock Amplify Authenticator
-vi.mock('@aws-amplify/ui-react', async (importOriginal) => {
-  const actual = await importOriginal<any>()
+vi.mock("@aws-amplify/ui-react", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
     useAuthenticator: vi.fn(() => ({
-      authStatus: 'unauthenticated',
+      authStatus: "unauthenticated",
       signOut: vi.fn(),
     })),
-  }
-})
+  };
+});
