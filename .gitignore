@@ -19,5 +19,6 @@ amplify_outputs.ts
 amplify_outputs.dart
 amplifyconfiguration.json
 .amplify-internal/
+.amplify-hosting/
 cdk.out/
 amplify-anthonyrlarsonui-*/
