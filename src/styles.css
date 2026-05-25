@@ -29,48 +29,48 @@
 }
 
 :root[data-theme="dark"] {
-  --sea-ink: #f8fafc;
-  --sea-ink-soft: #cbd5e1;
-  --lagoon: #60a5fa;
-  --lagoon-deep: #93c5fd;
-  --palm: #bfdbfe;
+  --sea-ink: #f1f5f9;
+  --sea-ink-soft: #94a3b8;
+  --lagoon: #3b82f6;
+  --lagoon-deep: #60a5fa;
+  --palm: #1e3a8a;
   --sand: #0f172a;
   --foam: #020617;
-  --surface: rgba(15, 23, 42, 0.8);
-  --surface-strong: rgba(15, 23, 42, 0.95);
-  --line: rgba(248, 250, 252, 0.1);
+  --surface: rgba(15, 23, 42, 0.6);
+  --surface-strong: rgba(15, 23, 42, 0.85);
+  --line: rgba(248, 250, 252, 0.08);
   --inset-glint: rgba(248, 250, 252, 0.05);
   --kicker: #60a5fa;
   --bg-base: #020617;
-  --header-bg: rgba(2, 6, 23, 0.85);
-  --chip-bg: rgba(15, 23, 42, 0.9);
-  --chip-line: rgba(248, 250, 252, 0.15);
-  --link-bg-hover: rgba(30, 41, 59, 0.8);
-  --hero-a: rgba(59, 130, 246, 0.15);
-  --hero-b: rgba(99, 102, 241, 0.15);
+  --header-bg: rgba(2, 6, 23, 0.7);
+  --chip-bg: rgba(15, 23, 42, 0.6);
+  --chip-line: rgba(248, 250, 252, 0.12);
+  --link-bg-hover: rgba(30, 41, 59, 0.5);
+  --hero-a: rgba(59, 130, 246, 0.1);
+  --hero-b: rgba(99, 102, 241, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --sea-ink: #f8fafc;
-    --sea-ink-soft: #cbd5e1;
-    --lagoon: #60a5fa;
-    --lagoon-deep: #93c5fd;
-    --palm: #bfdbfe;
+    --sea-ink: #f1f5f9;
+    --sea-ink-soft: #94a3b8;
+    --lagoon: #3b82f6;
+    --lagoon-deep: #60a5fa;
+    --palm: #1e3a8a;
     --sand: #0f172a;
     --foam: #020617;
-    --surface: rgba(15, 23, 42, 0.8);
-    --surface-strong: rgba(15, 23, 42, 0.95);
-    --line: rgba(248, 250, 252, 0.1);
+    --surface: rgba(15, 23, 42, 0.6);
+    --surface-strong: rgba(15, 23, 42, 0.85);
+    --line: rgba(248, 250, 252, 0.08);
     --inset-glint: rgba(248, 250, 252, 0.05);
     --kicker: #60a5fa;
     --bg-base: #020617;
-    --header-bg: rgba(2, 6, 23, 0.85);
-    --chip-bg: rgba(15, 23, 42, 0.9);
-    --chip-line: rgba(248, 250, 252, 0.15);
-    --link-bg-hover: rgba(30, 41, 59, 0.8);
-    --hero-a: rgba(59, 130, 246, 0.15);
-    --hero-b: rgba(99, 102, 241, 0.15);
+    --header-bg: rgba(2, 6, 23, 0.7);
+    --chip-bg: rgba(15, 23, 42, 0.6);
+    --chip-line: rgba(248, 250, 252, 0.12);
+    --link-bg-hover: rgba(30, 41, 59, 0.5);
+    --hero-a: rgba(59, 130, 246, 0.1);
+    --hero-b: rgba(99, 102, 241, 0.1);
   }
 }
 
@@ -93,8 +93,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-
 
 a {
   color: var(--lagoon-deep);
@@ -161,7 +159,10 @@ pre code {
 button,
 .island-shell,
 a {
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease,
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
     transform 180ms ease;
 }
 
