@@ -84,6 +84,7 @@ export default function Header() {
 
           {authStatus === "authenticated" ? (
             <button
+              type="button"
               onClick={() => {
                 signOut();
                 navigate({ to: "/" });

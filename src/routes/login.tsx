@@ -11,10 +11,10 @@ export const Route = createFileRoute("/login")({
       const session = await fetchAuthSession();
       if (session.tokens) {
         throw redirect({
-          to: (search as any).redirect || "/admin",
+          to: (search as { redirect?: string }).redirect || "/admin",
         });
       }
-    } catch (e) {
+    } catch (_e) {
       // Not logged in
     }
   },
