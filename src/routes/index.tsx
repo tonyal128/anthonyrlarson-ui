@@ -75,7 +75,7 @@ function App() {
             </Button>
             <Button
               component="a"
-              href="https://linkedin.com/in/anthonylarson"
+              href="https://linkedin.com/in/anthonyrlarson"
               target="_blank"
               radius="xl"
               size="md"
