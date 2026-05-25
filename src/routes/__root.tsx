@@ -1,5 +1,6 @@
 import {
   HeadContent,
+  Outlet,
   Scripts,
   createRootRouteWithContext,
 } from "@tanstack/react-router";
@@ -12,7 +13,14 @@ import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 
 import PostHogProvider from "../integrations/posthog/provider";
 
-import { MantineProvider } from "@mantine/core";
+import {
+  MantineProvider,
+  Container,
+  Title,
+  Text,
+  Button,
+  Stack,
+} from "@mantine/core";
 import "@mantine/core/styles.css";
 import appCss from "/src/styles.css?url";
 
@@ -57,7 +65,31 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
-  shellComponent: RootDocument,
+  component: () => (
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
+  ),
+  notFoundComponent: () => (
+    <Container py="xl">
+      <Stack align="center" gap="md">
+        <Title order={1}>404 - Page Not Found</Title>
+        <Text>The page you are looking for does not exist.</Text>
+        <Button component="a" href="/">
+          Go Home
+        </Button>
+      </Stack>
+    </Container>
+  ),
+  errorComponent: ({ error }: { error: any }) => (
+    <Container py="xl">
+      <Stack align="center" gap="md">
+        <Title order={1}>Something went wrong</Title>
+        <Text c="red">{error?.message || "An unexpected error occurred"}</Text>
+        <Button onClick={() => window.location.reload()}>Reload Page</Button>
+      </Stack>
+    </Container>
+  ),
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -68,7 +100,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
+      <body
+        className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]"
+        suppressHydrationWarning
+      >
         <MantineProvider defaultColorScheme="auto">
           <Authenticator.Provider>
             <PostHogProvider>

@@ -1,4 +1,4 @@
-import { Box, Group, Text, Anchor, ActionIcon, Stack } from "@mantine/core";
+import { Box, Group, Text, Stack } from "@mantine/core";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -6,10 +6,10 @@ export default function Footer() {
   return (
     <Box
       component="footer"
-      className="mt-20 border-t border-[var(--line)] px-4 pb-14 pt-10 text-[var(--sea-ink-soft)]"
+      className="mt-20 border-t border-(--line) px-4 pb-14 pt-10 text-(--sea-ink-soft)"
     >
       <Stack className="page-wrap" gap="lg">
-        <Group justify="space-between" align="center" gap="md">
+        <Group justify="center" align="center" gap="md">
           <Text size="sm" m={0}>
             &copy; {year} Anthony Larson. All rights reserved.
           </Text>

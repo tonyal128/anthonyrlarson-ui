@@ -7,7 +7,6 @@ import {
   ActionIcon,
   UnstyledButton,
   Image,
-  Text,
   Anchor,
 } from "@mantine/core";
 
@@ -20,21 +19,21 @@ export default function Header() {
   return (
     <Box
       component="header"
-      className="sticky top-0 z-50 border-b border-(--line) bg-[var(--header-bg)] px-4 backdrop-blur-lg"
+      className="sticky top-0 z-50 border-b border-(--line) bg-(--header-bg) px-4 backdrop-blur-lg"
     >
       <nav className="page-wrap">
-        <Group justify="space-between" py={{ base: "xs", sm: "md" }} gap="md">
+        <Group justify="space-between" py="xs" gap="md">
           <Group gap="md">
             <UnstyledButton
               component={Link}
               to="/"
-              className="flex items-center justify-center rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] p-1 transition hover:bg-[var(--link-bg-hover)]"
+              className="flex items-center justify-center rounded-full border border-(--chip-line) bg-(--chip-bg) p-1 transition hover:bg-(--link-bg-hover)"
             >
               <Image
                 src="/favicon.png"
                 alt="Anthony Larson"
-                w={{ base: 28, sm: 32 }}
-                h={{ base: 28, sm: 32 }}
+                w={32}
+                h={32}
                 radius="xl"
               />
             </UnstyledButton>
@@ -86,7 +85,7 @@ export default function Header() {
             </Group>
           </Group>
 
-          <Group gap={{ base: "xs", sm: "md" }}>
+          <Group gap="md">
             <Group gap="xs" visibleFrom="sm">
               <ActionIcon
                 component="a"
@@ -96,7 +95,7 @@ export default function Header() {
                 color="var(--sea-ink-soft)"
                 radius="xl"
                 size="lg"
-                className="hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]"
+                className="hover:bg-(--link-bg-hover) hover:text-(--sea-ink)"
               >
                 <svg viewBox="0 0 16 16" width="20" height="20">
                   <path
@@ -113,7 +112,7 @@ export default function Header() {
                 color="var(--sea-ink-soft)"
                 radius="xl"
                 size="lg"
-                className="hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)]"
+                className="hover:bg-(--link-bg-hover) hover:text-(--sea-ink)"
               >
                 <svg viewBox="0 0 24 24" width="20" height="20">
                   <path
@@ -133,7 +132,7 @@ export default function Header() {
                   signOut();
                   navigate({ to: "/" });
                 }}
-                className="rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--sea-ink)] shadow-[0_4px_12px_rgba(15,23,42,0.06)] transition hover:bg-[var(--link-bg-hover)] sm:px-4 sm:py-2 sm:text-sm"
+                className="rounded-full border border-(--chip-line) bg-(--chip-bg) px-3 py-1.5 text-xs font-semibold text-(--sea-ink) shadow-[0_4px_12px_rgba(15,23,42,0.06)] transition hover:bg-(--link-bg-hover) sm:px-4 sm:py-2 sm:text-sm"
               >
                 Sign Out
               </UnstyledButton>
@@ -141,7 +140,7 @@ export default function Header() {
               <UnstyledButton
                 component={Link}
                 to="/login"
-                className="rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--sea-ink)] shadow-[0_4px_12px_rgba(15,23,42,0.06)] transition hover:bg-[var(--link-bg-hover)] sm:px-4 sm:py-2 sm:text-sm"
+                className="rounded-full border border-(--chip-line) bg-(--chip-bg) px-3 py-1.5 text-xs font-semibold text-(--sea-ink) shadow-[0_4px_12px_rgba(15,23,42,0.06)] transition hover:bg-(--link-bg-hover) sm:px-4 sm:py-2 sm:text-sm"
               >
                 Login
               </UnstyledButton>
