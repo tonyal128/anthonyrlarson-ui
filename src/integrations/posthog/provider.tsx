@@ -1,24 +1,24 @@
-import posthog from "posthog-js";
 import { PostHogProvider as BasePostHogProvider } from "@posthog/react";
+import posthog from "posthog-js";
 import type { ReactNode } from "react";
 
 if (
-  typeof window !== "undefined" &&
-  import.meta.env.VITE_POSTHOG_KEY &&
-  import.meta.env.VITE_POSTHOG_KEY !== "phc_xxx"
+	typeof window !== "undefined" &&
+	import.meta.env.VITE_POSTHOG_KEY &&
+	import.meta.env.VITE_POSTHOG_KEY !== "phc_xxx"
 ) {
-  posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
-    api_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com",
-    person_profiles: "identified_only",
-    capture_pageview: false,
-    defaults: "2025-11-30",
-  });
+	posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
+		api_host: import.meta.env.VITE_POSTHOG_HOST || "https://us.i.posthog.com",
+		person_profiles: "identified_only",
+		capture_pageview: false,
+		defaults: "2025-11-30",
+	});
 }
 
 interface PostHogProviderProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
 export default function PostHogProvider({ children }: PostHogProviderProps) {
-  return <BasePostHogProvider client={posthog}>{children}</BasePostHogProvider>;
+	return <BasePostHogProvider client={posthog}>{children}</BasePostHogProvider>;
 }
