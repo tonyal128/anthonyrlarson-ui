@@ -1,20 +1,56 @@
-import { Link } from '@tanstack/react-router'
-import ThemeToggle from './ThemeToggle'
+import { Link, useNavigate } from "@tanstack/react-router";
+import ThemeToggle from "./ThemeToggle";
+import { useAuthenticator } from "@aws-amplify/ui-react";
 
 export default function Header() {
+  const { authStatus, signOut } = useAuthenticator((context) => [
+    context.authStatus,
+  ]);
+  const navigate = useNavigate();
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)] px-4 backdrop-blur-lg">
+    <header className="sticky top-0 z-50 border-b border-(--line) bg-[var(--header-bg)] px-4 backdrop-blur-lg">
       <nav className="page-wrap flex flex-wrap items-center gap-x-3 gap-y-2 py-3 sm:py-4">
-        <h2 className="m-0 flex-shrink-0 text-base font-semibold tracking-tight">
+        <h2 className="m-0 shrink-0">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(15,23,42,0.08)] sm:px-4 sm:py-2"
+            className="flex items-center justify-center rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] p-1 transition hover:bg-[var(--link-bg-hover)]"
           >
-            Anthony Larson
+            <img
+              src="/favicon.png"
+              alt="Anthony Larson"
+              className="h-8 w-8 rounded-full"
+            />
           </Link>
         </h2>
 
-        <div className="ml-auto flex items-center gap-1.5 sm:ml-0 sm:gap-2">
+        <div className="flex items-center gap-x-4 gap-y-1 text-sm font-semibold">
+          <Link
+            to="/"
+            className="nav-link"
+            activeProps={{ className: "nav-link is-active" }}
+            activeOptions={{ exact: true }}
+          >
+            Home
+          </Link>
+          <a href="/#experience" className="nav-link">
+            Experience
+          </a>
+          <a href="/#projects" className="nav-link">
+            Projects
+          </a>
+          {authStatus === "authenticated" && (
+            <Link
+              to="/admin"
+              className="nav-link"
+              activeProps={{ className: "nav-link is-active" }}
+            >
+              Admin
+            </Link>
+          )}
+        </div>
+
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
           <a
             href="https://github.com/tonyal128"
             target="_blank"
@@ -30,7 +66,7 @@ export default function Header() {
             </svg>
           </a>
           <a
-            href="https://linkedin.com/in/anthonylarson"
+            href="https://linkedin.com/in/anthonyrlarson"
             target="_blank"
             rel="noreferrer"
             className="hidden rounded-xl p-2 text-[var(--sea-ink-soft)] transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)] sm:block"
@@ -45,25 +81,27 @@ export default function Header() {
           </a>
 
           <ThemeToggle />
-        </div>
 
-        <div className="order-3 flex w-full flex-wrap items-center gap-x-4 gap-y-1 pb-1 text-sm font-semibold sm:order-2 sm:w-auto sm:flex-nowrap sm:pb-0">
-          <Link
-            to="/"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-            activeOptions={{ exact: true }}
-          >
-            Home
-          </Link>
-          <a href="#experience" className="nav-link">
-            Experience
-          </a>
-          <a href="#projects" className="nav-link">
-            Projects
-          </a>
+          {authStatus === "authenticated" ? (
+            <button
+              onClick={() => {
+                signOut();
+                navigate({ to: "/" });
+              }}
+              className="ml-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--sea-ink)] shadow-[0_4px_12px_rgba(15,23,42,0.06)] transition hover:bg-[var(--link-bg-hover)] sm:px-4 sm:py-2 sm:text-sm"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="ml-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-xs font-semibold text-[var(--sea-ink)] shadow-[0_4px_12px_rgba(15,23,42,0.06)] transition hover:bg-[var(--link-bg-hover)] sm:px-4 sm:py-2 sm:text-sm"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </nav>
     </header>
-  )
+  );
 }
