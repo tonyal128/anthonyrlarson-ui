@@ -17,6 +17,7 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.15.4",
     "@mantine/core": "^9.1.1",
+    "@mantine/dates": "^9.3.0",
     "@mantine/hooks": "^9.1.1",
     "@posthog/react": "^1.7.0",
     "@tailwindcss/vite": "^4.1.18",
@@ -29,6 +30,7 @@
     "@tanstack/react-start": "latest",
     "@tanstack/router-plugin": "^1.132.0",
     "aws-amplify": "^6.17.0",
+    "dayjs": "^1.11.21",
     "lucide-react": "^0.545.0",
     "nitro": "npm:nitro-nightly@latest",
     "posthog-js": "^1.358.1",

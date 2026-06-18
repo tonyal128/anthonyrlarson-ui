@@ -8,5 +8,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    env: {
+      VITE_EXPERIENCE_API_URL: '',
+      VITE_EDUCATION_API_URL: '',
+      VITE_CERTIFICATIONS_API_URL: '',
+    }
   },
 })

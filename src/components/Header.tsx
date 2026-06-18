@@ -60,15 +60,7 @@ export default function Header() {
 							>
 								Experience
 							</Anchor>
-							<Anchor
-								href="/#projects"
-								className="nav-link"
-								underline="never"
-								size="sm"
-								fw={600}
-							>
-								Projects
-							</Anchor>
+
 							{authStatus === "authenticated" && (
 								<Anchor
 									component={Link}

@@ -4,6 +4,11 @@ import { auth } from './auth/resource';
 /**
  * @see https://docs.amplify.aws/gen2/build-a-backend/
  */
-defineBackend({
+const backend = defineBackend({
   auth,
 });
+
+const { cfnUserPool } = backend.auth.resources.cfnResources;
+cfnUserPool.adminCreateUserConfig = {
+  allowAdminCreateUserOnly: true,
+};

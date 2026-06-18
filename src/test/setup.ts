@@ -27,3 +27,16 @@ vi.mock("@aws-amplify/ui-react", async (importOriginal) => {
 		})),
 	};
 });
+
+// Mock ResizeObserver for Mantine
+class ResizeObserverMock {
+	observe() {}
+	unobserve() {}
+	disconnect() {}
+}
+window.ResizeObserver = ResizeObserverMock;
+
+// Mock document.fonts for Mantine Textarea Autosize
+Object.defineProperty(document, "fonts", {
+	value: { addEventListener: vi.fn(), removeEventListener: vi.fn() },
+});

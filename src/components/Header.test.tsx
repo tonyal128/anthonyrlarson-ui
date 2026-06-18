@@ -32,7 +32,7 @@ describe("Header Component", () => {
 		renderHeader();
 		expect(screen.getByText(/Home/i)).toBeDefined();
 		expect(screen.getByText(/Experience/i)).toBeDefined();
-		expect(screen.getByText(/Projects/i)).toBeDefined();
+
 	});
 
 	it("shows Login button when unauthenticated", () => {

@@ -229,4 +229,316 @@ a {
     opacity: 1;
     transform: translateY(0);
   }
+  --sand: #0f172a;
+  --foam: #020617;
+  --surface: rgba(15, 23, 42, 0.6);
+  --surface-strong: rgba(15, 23, 42, 0.85);
+  --line: rgba(248, 250, 252, 0.08);
+  --inset-glint: rgba(248, 250, 252, 0.05);
+  --kicker: #60a5fa;
+  --bg-base: #020617;
+  --header-bg: rgba(2, 6, 23, 0.7);
+  --chip-bg: rgba(15, 23, 42, 0.6);
+  --chip-line: rgba(248, 250, 252, 0.12);
+  --link-bg-hover: rgba(30, 41, 59, 0.5);
+  --hero-a: rgba(59, 130, 246, 0.1);
+  --hero-b: rgba(99, 102, 241, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sea-ink: #f1f5f9;
+    --sea-ink-soft: #94a3b8;
+    --lagoon: #3b82f6;
+    --lagoon-deep: #60a5fa;
+    --palm: #1e3a8a;
+    --sand: #0f172a;
+    --foam: #020617;
+    --surface: rgba(15, 23, 42, 0.6);
+    --surface-strong: rgba(15, 23, 42, 0.85);
+    --line: rgba(248, 250, 252, 0.08);
+    --inset-glint: rgba(248, 250, 252, 0.05);
+    --kicker: #60a5fa;
+    --bg-base: #020617;
+    --header-bg: rgba(2, 6, 23, 0.7);
+    --chip-bg: rgba(15, 23, 42, 0.6);
+    --chip-line: rgba(248, 250, 252, 0.12);
+    --link-bg-hover: rgba(30, 41, 59, 0.5);
+    --hero-a: rgba(59, 130, 246, 0.1);
+    --hero-b: rgba(99, 102, 241, 0.1);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--sea-ink);
+  font-family: var(--font-sans);
+  background-color: var(--bg-base);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--lagoon-deep);
+  text-decoration-color: rgba(59, 130, 246, 0.4);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: #1d4ed8;
+}
+
+code {
+  font-size: 0.9em;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--surface-strong) 82%, white 18%);
+  border-radius: 7px;
+  padding: 2px 7px;
+}
+
+pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+.page-wrap {
+  width: min(1080px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.display-title {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.island-shell {
+  border: 1px solid var(--line);
+  background-color: var(--surface-strong);
+  box-shadow:
+    0 1px 0 var(--inset-glint) inset,
+    0 22px 44px rgba(15, 23, 42, 0.05),
+    0 6px 18px rgba(15, 23, 42, 0.03);
+  backdrop-filter: blur(4px);
+}
+
+.feature-card {
+  background-color: var(--surface);
+  box-shadow:
+    0 1px 0 var(--inset-glint) inset,
+    0 18px 34px rgba(15, 23, 42, 0.04),
+    0 4px 14px rgba(15, 23, 42, 0.02);
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--lagoon-deep) 35%, var(--line));
+}
+
+button,
+.island-shell,
+a {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.island-kicker {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.69rem;
+  color: var(--kicker);
+}
+
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--sea-ink-soft);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--lagoon), #818cf8);
+  transition: transform 170ms ease;
+}
+
+.nav-link:hover,
+.nav-link.is-active {
+  color: var(--sea-ink);
+}
+
+.nav-link:hover::after,
+.nav-link.is-active::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 640px) {
+  .nav-link::after {
+    bottom: -4px;
+  }
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: color-mix(in oklab, var(--header-bg) 84%, transparent 16%);
+}
+
+.rise-in {
+  animation: rise-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   Print / Export as Resume Styles
+   ========================================================================== */
+@media print {
+  /* Aggressively squash whitespace */
+  @page {
+    margin: 0.5in;
+  }
+
+  /* Hide UI elements that shouldn't be printed */
+  .no-print,
+  .mantine-Button-root,
+  .mantine-TextInput-root,
+  .mantine-SegmentedControl-root,
+  #skills,
+  nav,
+  header,
+  footer {
+    display: none !important;
+  }
+
+  /* Force 1 column layout for printing */
+  .mantine-SimpleGrid-root {
+    display: block !important;
+  }
+
+  /* Remove all Container/Stack paddings and gaps */
+  .mantine-Container-root {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .mantine-Stack-root {
+    gap: 8px !important;
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+
+  .mantine-Group-root {
+    gap: 8px !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Reset colors to save ink and ensure contrast */
+  body, .island-shell, .feature-card {
+    background: transparent !important;
+    background-color: white !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Disable animations and filters that cause browser PDF rendering bugs (diagonal cutoffs) */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    backdrop-filter: none !important;
+    overflow: visible !important;
+    color: black !important;
+  }
+
+  /* Allow natural page breaks to prevent massive whitespace gaps */
+  .feature-card {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 16px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Fix titles/headers whitespace */
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .display-title {
+    font-size: 2.2rem !important;
+    line-height: 1 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .island-kicker {
+    margin-bottom: 0 !important;
+    margin-left: 2px !important;
+  }
+
+  /* Hide the scroll tracking stickiness */
+  div[style*="position: sticky"] {
+    position: static !important;
+  }
+
+  /* List spacing */
+  .mantine-List-root {
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .mantine-ListItem-root {
+    margin-bottom: 4px !important;
+  }
+
+  /* The layout wrapper */
+  .page-wrap {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 24px !important;
+  }
 }

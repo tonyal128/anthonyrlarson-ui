@@ -20,6 +20,7 @@ import Header from "../components/Header";
 import PostHogProvider from "../integrations/posthog/provider";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import { Authenticator } from "@aws-amplify/ui-react";
 
 import { Amplify } from "aws-amplify";
@@ -29,7 +30,7 @@ import { amplifyConfig } from "../amplify-config";
 
 Amplify.configure(amplifyConfig);
 
-import type { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -69,28 +70,34 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 		</RootDocument>
 	),
 	notFoundComponent: () => (
-		<Container py="xl">
-			<Stack align="center" gap="md">
-				<Title order={1}>404 - Page Not Found</Title>
-				<Text>The page you are looking for does not exist.</Text>
-				<Button component="a" href="/">
-					Go Home
-				</Button>
-			</Stack>
-		</Container>
+		<div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
+			<h1 className="text-3xl font-bold mb-4 text-[var(--sea-ink)]">404 - Page Not Found</h1>
+			<p className="text-[var(--sea-ink-soft)] mb-6">The page you are looking for does not exist.</p>
+			<a
+				href="/"
+				className="px-6 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition"
+			>
+				Go Home
+			</a>
+		</div>
 	),
 	errorComponent: ({ error }: { error: Error }) => (
-		<Container py="xl">
-			<Stack align="center" gap="md">
-				<Title order={1}>Something went wrong</Title>
-				<Text c="red">{error?.message || "An unexpected error occurred"}</Text>
-				<Button onClick={() => window.location.reload()}>Reload Page</Button>
-			</Stack>
-		</Container>
+		<div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
+			<h1 className="text-3xl font-bold mb-4 text-[var(--sea-ink)]">Something went wrong</h1>
+			<p className="text-red-600 font-semibold mb-2">{error?.message || "An unexpected error occurred"}</p>
+			<p className="text-sm text-[var(--sea-ink-soft)] mb-6">Check client logs/console for details.</p>
+			<button
+				onClick={() => window.location.reload()}
+				className="px-6 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition cursor-pointer"
+			>
+				Reload Page
+			</button>
+		</div>
 	),
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const { queryClient } = Route.useRouteContext();
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
@@ -103,25 +110,27 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				suppressHydrationWarning
 			>
 				<MantineProvider defaultColorScheme="auto">
-					<Authenticator.Provider>
-						<PostHogProvider>
-							<Header />
-							{children}
-							<Footer />
-							<TanStackDevtools
-								config={{
-									position: "bottom-right",
-								}}
-								plugins={[
-									{
-										name: "Tanstack Router",
-										render: <TanStackRouterDevtoolsPanel />,
-									},
-									TanStackQueryDevtools,
-								]}
-							/>
-						</PostHogProvider>
-					</Authenticator.Provider>
+					<QueryClientProvider client={queryClient}>
+						<Authenticator.Provider>
+							<PostHogProvider>
+								<Header />
+								{children}
+								<Footer />
+								<TanStackDevtools
+									config={{
+										position: "bottom-right",
+									}}
+									plugins={[
+										{
+											name: "Tanstack Router",
+											render: <TanStackRouterDevtoolsPanel />,
+										},
+										TanStackQueryDevtools,
+									]}
+								/>
+							</PostHogProvider>
+						</Authenticator.Provider>
+					</QueryClientProvider>
 				</MantineProvider>
 				<Scripts />
 			</body>

@@ -7,17 +7,172 @@ import {
 	List,
 	ListItem,
 	SimpleGrid,
+	Skeleton,
 	Stack,
 	Text,
 	ThemeIcon,
 	Title,
+	TextInput,
+	SegmentedControl,
+	CloseButton,
+	Drawer,
+	Affix,
+	Box,
 } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
-import { Briefcase, GraduationCap, Wrench } from "lucide-react";
+import { useState } from "react";
+import { Briefcase, GraduationCap, Wrench, Award, ExternalLink, Search, X, Printer, Filter } from "lucide-react";
+import { useExperiencesQuery } from "../hooks/useExperiences";
+import { useEducationQuery, useCertificationsQuery } from "../hooks/useEducationCertifications";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/")({ component: Home });
 
-function App() {
+export function Home() {
+	const { data: experiences = [], isLoading, isError, error, refetch } = useExperiencesQuery();
+	const { data: educations = [] } = useEducationQuery();
+	const { data: certifications = [] } = useCertificationsQuery();
+	const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [filterMode, setFilterMode] = useState<"highlight" | "hide">("highlight");
+	const [drawerOpened, setDrawerOpened] = useState(false);
+	const [showAllSkills, setShowAllSkills] = useState(false);
+	const VISIBLE_SKILLS_LIMIT = 12;
+
+	// 1. Calculate derived skills from experience tags
+	const derivedSkills = Array.from(
+		new Set(
+			experiences.flatMap((exp) =>
+				exp.employer.experience.flatMap((bullet) =>
+					bullet.technologies?.map((tech) => tech.name) || [],
+				),
+			),
+		),
+	).sort((a, b) => a.localeCompare(b));
+
+	const skillsToDisplay = searchQuery.trim()
+		? derivedSkills.filter((skill) =>
+				skill.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+		  )
+		: derivedSkills;
+
+	// 2. Filter experiences by search query and selected skill
+	const filteredExperiences = experiences.filter((exp) => {
+		const job = exp.employer;
+		const queryLower = searchQuery.trim().toLowerCase();
+
+		let matchesSearch = true;
+		if (queryLower) {
+			const titleMatch = job.jobTitle.toLowerCase().includes(queryLower);
+			const companyMatch = job.name.toLowerCase().includes(queryLower);
+			const bulletMatch = job.experience.some((bullet) =>
+				bullet.text.toLowerCase().includes(queryLower) ||
+				bullet.technologies?.some((tech) => tech.name.toLowerCase().includes(queryLower))
+			);
+			matchesSearch = titleMatch || companyMatch || bulletMatch;
+		}
+
+		let matchesSkill = true;
+		if (selectedSkill) {
+			const skillLower = selectedSkill.toLowerCase();
+			const titleMatch = job.jobTitle.toLowerCase().includes(skillLower);
+			const companyMatch = job.name.toLowerCase().includes(skillLower);
+			const bulletMatch = job.experience.some((bullet) =>
+				bullet.text.toLowerCase().includes(skillLower) ||
+				bullet.technologies?.some(
+					(tech) =>
+						tech.name.toLowerCase().includes(skillLower) ||
+						tech.tags.some((tag) => tag.toLowerCase().includes(skillLower))
+				)
+			);
+			matchesSkill = titleMatch || companyMatch || bulletMatch;
+		}
+
+		return matchesSearch && matchesSkill;
+	});
+
+	const renderFilters = () => (
+		<Stack gap="md">
+			<TextInput
+				placeholder="Search jobs, bullets, skills..."
+				value={searchQuery}
+				onChange={(e) => setSearchQuery(e.currentTarget.value)}
+				leftSection={<Search size={16} />}
+				rightSection={
+					searchQuery ? (
+						<CloseButton
+							aria-label="Clear input"
+							onClick={() => setSearchQuery("")}
+							size="sm"
+						/>
+					) : null
+				}
+			/>
+			<Group justify="space-between" align="center">
+				<Text size="xs" fw={500} c="var(--sea-ink-soft)">
+					Filter Mode:
+				</Text>
+				<SegmentedControl
+					size="xs"
+					value={filterMode}
+					onChange={(val) => setFilterMode(val as "highlight" | "hide")}
+					data={[
+						{ label: "Highlight", value: "highlight" },
+						{ label: "Hide Others", value: "hide" },
+					]}
+				/>
+			</Group>
+
+			<Group gap="xs" mt="xs">
+				{skillsToDisplay.length === 0 ? (
+					<Text size="sm" c="var(--sea-ink-soft)" fs="italic" w="100%" ta="center">No skills found. Add technologies to your experiences to see them here.</Text>
+				) : (
+					<>
+						{(showAllSkills ? skillsToDisplay : skillsToDisplay.slice(0, VISIBLE_SKILLS_LIMIT)).map((skill) => {
+							const isActive = selectedSkill === skill;
+							return (
+								<Badge
+									key={skill}
+									variant={isActive ? "filled" : "light"}
+									color="blue"
+									size="lg"
+									radius="sm"
+									style={{ cursor: "pointer", transition: "all 0.2s ease" }}
+									onClick={() => setSelectedSkill(isActive ? null : skill)}
+								>
+									{skill}
+								</Badge>
+							);
+						})}
+						{skillsToDisplay.length > VISIBLE_SKILLS_LIMIT && (
+							<Button
+								variant="subtle"
+								size="xs"
+								onClick={() => setShowAllSkills(!showAllSkills)}
+								style={{ padding: "0 8px" }}
+							>
+								{showAllSkills ? "Show Less" : `+${skillsToDisplay.length - VISIBLE_SKILLS_LIMIT} More`}
+							</Button>
+						)}
+					</>
+				)}
+			</Group>
+
+			{(selectedSkill || searchQuery) && (
+				<Button
+					variant="subtle"
+					size="xs"
+					leftSection={<X size={12} />}
+					onClick={() => {
+						setSelectedSkill(null);
+						setSearchQuery("");
+					}}
+					mt="xs"
+				>
+					Reset Filters
+				</Button>
+			)}
+		</Stack>
+	);
 	return (
 		<Container size="lg" py="xl" className="page-wrap">
 			{/* Hero Section */}
@@ -83,6 +238,17 @@ function App() {
 						>
 							Connect on LinkedIn
 						</Button>
+						<Button
+							onClick={() => window.print()}
+							radius="xl"
+							size="md"
+							variant="outline"
+							color="blue"
+							leftSection={<Printer size={18} />}
+							className="no-print"
+						>
+							Export as Resume
+						</Button>
 					</Group>
 				</Stack>
 			</Card>
@@ -91,7 +257,7 @@ function App() {
 				<Stack className="md:col-span-2" gap="xl">
 					{/* Experience Section */}
 					<section id="experience" className="scroll-mt-24">
-						<Group mb="xl">
+						<Group mb="xl" wrap="nowrap">
 							<ThemeIcon size="lg" variant="light" color="blue" radius="md">
 								<Briefcase size={20} suppressHydrationWarning />
 							</ThemeIcon>
@@ -101,160 +267,179 @@ function App() {
 						</Group>
 
 						<Stack gap="xl">
-							{[
-								{
-									role: "Senior Software Engineer",
-									company: "Wellmark",
-									period: "February 2026 - Present",
-									bullets: [
-										"Working as a Senior Software Engineer contributing to modern web applications and system architecture.",
-									],
-								},
-								{
-									role: "Tech Lead",
-									company: "Sammons Financial Group",
-									period: "2020 - 2026",
-									bullets: [
-										"Designed and built a data entry system from the ground up that utilizes Azure Document Intelligence to perform OCR on documents",
-										"Utilized Azure Service Bus and RabbitMQ for communicating events and processing in real time",
-										"Utilized OpenAI api to extract data from forms prior to sending it through Azure Document Intelligence",
-										"Built a UI for the data entry system using React, Tanstack Query, Tanstack Router, and Mantine",
-										"Built UI components for a workflow system using React, Tanstack Query, Redux, React Router, and Material UI",
-										"Built services and listeners for our data entry system and workflow system using NodeJS",
-										"Mentored other developers and QA automation engineers",
-										"Communicated with stakeholders, developers, QAs, and architects about system design, architecture decisions, progress, and challenges",
-										"Built out tests using Vitest, Jest, React Testing Library, Mocha, and Chai",
-										"Utilized MongoDB and MS SQL for data extraction",
-									],
-								},
-								{
-									role: "Senior Software Engineer",
-									company: "Casey’s General Store",
-									period: "2019 - 2020",
-									bullets: [
-										"Led a modernization effort to move from WinForms to React",
-										"Led a modernization effort to move applications from VB.NET to .NET Core",
-										"Mentored other developers",
-										"Maintained and updated legacy systems that were on varying versions of .NET and VB.NET",
-										"Led an effort to introduce CI/CD to our normal deployment process using Azure DevOps",
-										"Built out stored procedures and tests for those stored procedures",
-										"Utilized MS SQL for data extraction",
-										"Created unit tests using xUnit",
-									],
-								},
-								{
-									role: "Software Engineer",
-									company: "Shazam",
-									period: "2018 - 2019",
-									bullets: [
-										"Connected foreign processing network to Shazam using C++",
-										"Built and optimized tools for data extraction using C++ and Python",
-										"Utilized Python and Java to validate accurate processing",
-										"Created solutions for production defects",
-										"Created microservices to connect to various imaging providers",
-										"Utilized Flutter, React, and Java to build out a banking platform",
-										"Utilized MySQL to store and query data on our banking platform",
-									],
-								},
-								{
-									role: "Business Application Specialist",
-									company: "",
-									period: "2013 - 2018",
-									bullets: [
-										"Developed a read only dashboard to monitor outbound dialing for multiple business units using jQuery, HTML, CSS, and Ajax",
-										"Designed a C# application that was used to format and sanitize raw files before use",
-										"Built queries using MS SQL",
-										"Built reports using SAP Business Objects and SAP Crystal Reports",
-										"Wrote test scripts and performed user acceptance testing for the automated dialer system",
-										"Train teammates in SQL",
-										"Created team standards for our reporting systems",
-										"Created documentation around our custom reports",
-									],
-								},
-							].map((job, index) => (
-								<Card
-									key={job.role + job.company}
-									shadow="sm"
-									radius="lg"
-									className="island-shell feature-card rise-in"
-									style={{ animationDelay: `${index * 90 + 80}ms` }}
-									p="xl"
-								>
-									<Title order={3} size="h5" c="var(--sea-ink)" mb={4}>
-										{job.role}
-									</Title>
-									<Text size="sm" fw={500} c="var(--lagoon-deep)" mb="md">
-										{job.company ? `${job.company} • ` : ""}
-										{job.period}
-									</Text>
-									<List
-										size="sm"
-										c="var(--sea-ink-soft)"
-										spacing="xs"
-										className="leading-relaxed"
-									>
-										{job.bullets.map((bullet) => (
-											<ListItem key={bullet}>{bullet}</ListItem>
-										))}
-									</List>
+							{isLoading &&
+								[1, 2, 3].map((n) => (
+									<Card key={n} shadow="sm" radius="lg" className="island-shell" p="xl">
+										<Skeleton height={24} width="60%" mb="md" />
+										<Skeleton height={16} width="40%" mb="xl" />
+										<Stack gap="xs">
+											<Skeleton height={12} width="95%" />
+											<Skeleton height={12} width="90%" />
+											<Skeleton height={12} width="85%" />
+										</Stack>
+									</Card>
+								))}
+
+							{isError && (
+								<Card shadow="sm" radius="lg" className="island-shell" p="xl" style={{ border: "1px solid var(--mantine-color-red-light)" }}>
+									<Stack align="flex-start" gap="md">
+										<Text c="red" fw={600}>Failed to load work experiences.</Text>
+										<Text size="sm" c="dimmed">{error instanceof Error ? error.message : "Unknown error occurred"}</Text>
+										<Button size="xs" color="red" variant="light" onClick={() => refetch()}>
+											Retry
+										</Button>
+									</Stack>
 								</Card>
-							))}
+							)}
+
+							{!isLoading && !isError && experiences.length === 0 && (
+								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
+									<Text c="var(--sea-ink-soft)" ta="center" fs="italic">No work experiences have been added yet.</Text>
+								</Card>
+							)}
+
+							{!isLoading && !isError && (filterMode === "hide" && filteredExperiences.length === 0) && (
+								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
+									<Text c="dimmed" ta="center">No matching experiences for the selected filters.</Text>
+								</Card>
+							)}
+
+							{!isLoading &&
+								!isError &&
+								(filterMode === "highlight" ? experiences : filteredExperiences).map((exp, index) => {
+									const job = exp.employer;
+									const period = `${job.startDate} - ${job.endDate || "Present"}`;
+
+									// Determine if this experience matches the active filter criteria
+									const isMatched = filteredExperiences.some((f) => f.id === exp.id);
+									const hasActiveFilter = !!(selectedSkill || searchQuery.trim());
+
+									return (
+										<Card
+											key={exp.id}
+											shadow="sm"
+											radius="lg"
+											className="island-shell feature-card rise-in"
+											style={{
+												animationDelay: `${index * 90 + 80}ms`,
+												transition: "all 0.3s ease",
+												opacity: hasActiveFilter && !isMatched ? 0.35 : 1,
+												transform: hasActiveFilter && isMatched ? "scale(1.015)" : "scale(1)",
+												border: hasActiveFilter && isMatched ? "2px solid var(--mantine-color-blue-filled)" : "1px solid transparent",
+												boxShadow: hasActiveFilter && isMatched ? "0 8px 30px rgba(34, 139, 230, 0.15)" : undefined,
+											}}
+											p="xl"
+										>
+											<Title order={3} size="h5" c="var(--sea-ink)" mb={4}>
+												{job.jobTitle}
+											</Title>
+											<Text size="sm" fw={500} c="var(--lagoon-deep)" mb="md">
+												{job.name ? `${job.name} • ` : ""}
+												{period}
+											</Text>
+											<List
+												size="sm"
+												c="var(--sea-ink-soft)"
+												spacing="xs"
+												className="leading-relaxed"
+											>
+												{job.experience.map((bullet, idx) => {
+													let matchesSearch = true;
+													if (searchQuery.trim()) {
+														const queryLower = searchQuery.trim().toLowerCase();
+														const textMatch = bullet.text.toLowerCase().includes(queryLower);
+														const techMatch = bullet.technologies?.some(
+															(tech) => tech.name.toLowerCase().includes(queryLower),
+														);
+														matchesSearch = textMatch || (techMatch ?? false);
+													}
+
+													let matchesSkill = true;
+													if (selectedSkill) {
+														const skillLower = selectedSkill.toLowerCase();
+														const textMatch = bullet.text.toLowerCase().includes(skillLower);
+														const techMatch = bullet.technologies?.some(
+															(tech) =>
+																tech.name.toLowerCase().includes(skillLower) ||
+																tech.tags.some((tag) => tag.toLowerCase().includes(skillLower)),
+														);
+														matchesSkill = textMatch || (techMatch ?? false);
+													}
+
+													const isBulletMatched = matchesSearch && matchesSkill;
+													const hasActiveFilter = !!(selectedSkill || searchQuery.trim());
+
+													return (
+														<ListItem
+															key={bullet.text + idx}
+															style={{
+																transition: "all 0.2s ease",
+																opacity: hasActiveFilter && !isBulletMatched ? 0.3 : 1,
+															}}
+														>
+															<Text
+																size="sm"
+																fw={hasActiveFilter && isBulletMatched ? 600 : 400}
+																c={hasActiveFilter && isBulletMatched ? "var(--sea-ink)" : undefined}
+																style={{ display: "inline" }}
+															>
+																{bullet.text}
+															</Text>
+															{bullet.technologies && bullet.technologies.some(tech => 
+																selectedSkill?.toLowerCase() === tech.name.toLowerCase() ||
+																(searchQuery.trim() && tech.name.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+															) && (
+																<Group gap={4} mt={4}>
+																	{bullet.technologies
+																		.filter(tech => 
+																			selectedSkill?.toLowerCase() === tech.name.toLowerCase() ||
+																			(searchQuery.trim() && tech.name.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+																		)
+																		.map((tech, tIdx) => (
+																			<Badge key={tIdx} variant="filled" size="xs" color="blue">
+																				{tech.name}
+																			</Badge>
+																		))}
+																</Group>
+															)}
+														</ListItem>
+													);
+												})}
+											</List>
+										</Card>
+									);
+								})}
 						</Stack>
 					</section>
 				</Stack>
 
-				<Stack gap="xl">
+				<Stack gap="xl" style={{ position: "sticky", top: "100px", alignSelf: "start" }}>
 					{/* Skills Section */}
-					<section id="skills" className="scroll-mt-24">
-						<Group mb="xl">
-							<ThemeIcon size="lg" variant="light" color="blue" radius="md">
-								<Wrench size={20} suppressHydrationWarning />
-							</ThemeIcon>
-							<Title order={2} c="var(--sea-ink)">
-								Skills
-							</Title>
-						</Group>
-
-						<Card
-							shadow="sm"
-							radius="lg"
-							className="island-shell rise-in"
-							p="xl"
-						>
-							<Group gap="xs">
-								{[
-									"AWS",
-									"Azure",
-									"RabbitMQ",
-									"Kubernetes",
-									"Docker",
-									"React",
-									"JavaScript",
-									"MongoDB",
-									"NodeJS",
-									"TypeScript",
-									"C#",
-									".NET",
-									"SQL",
-									"Python",
-								].map((skill) => (
-									<Badge
-										key={skill}
-										variant="light"
-										color="blue"
-										size="lg"
-										radius="sm"
-									>
-										{skill}
-									</Badge>
-								))}
+					<Box visibleFrom="md" className="no-print">
+						<section id="skills" className="scroll-mt-24">
+							<Group mb="xl" wrap="nowrap">
+								<ThemeIcon size="lg" variant="light" color="blue" radius="md">
+									<Wrench size={20} suppressHydrationWarning />
+								</ThemeIcon>
+								<Title order={2} c="var(--sea-ink)">
+									Skills
+								</Title>
 							</Group>
-						</Card>
-					</section>
+
+							<Card
+								shadow="sm"
+								radius="lg"
+								className="island-shell rise-in"
+								p="xl"
+							>
+								{renderFilters()}
+							</Card>
+						</section>
+					</Box>
 
 					{/* Education Section */}
 					<section id="education" className="scroll-mt-24">
-						<Group mb="xl">
+						<Group mb="xl" wrap="nowrap">
 							<ThemeIcon size="lg" variant="light" color="blue" radius="md">
 								<GraduationCap size={20} suppressHydrationWarning />
 							</ThemeIcon>
@@ -263,25 +448,120 @@ function App() {
 							</Title>
 						</Group>
 
-						<Card
-							shadow="sm"
-							radius="lg"
-							className="island-shell rise-in"
-							p="xl"
-						>
-							<Title order={3} size="h5" c="var(--sea-ink)" mb={4}>
-								Associates in Applied Science
+						<Stack gap="md">
+							{educations.length === 0 ? (
+								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
+									<Text size="sm" c="var(--sea-ink-soft)" ta="center" fs="italic">No education history has been added yet.</Text>
+								</Card>
+							) : (
+								educations.map((edu) => (
+									<Card
+										key={edu.id}
+										shadow="sm"
+										radius="lg"
+										className="island-shell rise-in"
+										p="xl"
+									>
+										<Title order={3} size="h5" c="var(--sea-ink)" mb={4}>
+											{edu.degree}
+										</Title>
+										<Text size="sm" fw={500} c="var(--lagoon-deep)" mb="xs">
+											{edu.institution}
+										</Text>
+										<Text size="sm" c="var(--sea-ink-soft)" mb={edu.description ? "xs" : undefined}>
+											{edu.period}
+										</Text>
+										{edu.description && (
+											<Text size="sm" c="var(--sea-ink-soft)">
+												{edu.description}
+											</Text>
+										)}
+									</Card>
+								))
+							)}
+						</Stack>
+					</section>
+
+					{/* Certifications Section */}
+					<section id="certifications" className="scroll-mt-24" style={{ marginTop: "24px" }}>
+						<Group mb="xl" wrap="nowrap">
+							<ThemeIcon size="lg" variant="light" color="blue" radius="md">
+								<Award size={20} suppressHydrationWarning />
+							</ThemeIcon>
+							<Title order={2} c="var(--sea-ink)">
+								Certifications
 							</Title>
-							<Text size="sm" fw={500} c="var(--lagoon-deep)" mb="xs">
-								Des Moines Area Community College
-							</Text>
-							<Text size="sm" c="var(--sea-ink-soft)">
-								Class of 2018
-							</Text>
-						</Card>
+						</Group>
+
+						<Stack gap="md">
+							{certifications.length === 0 ? (
+								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
+									<Text size="sm" c="var(--sea-ink-soft)" ta="center" fs="italic">No certifications have been added yet.</Text>
+								</Card>
+							) : (
+								certifications.map((cert) => (
+									<Card
+										key={cert.id}
+										shadow="sm"
+										radius="lg"
+										className="island-shell rise-in"
+										p="xl"
+									>
+										<Title order={3} size="h5" c="var(--sea-ink)" mb={4}>
+											{cert.name}
+										</Title>
+										<Text size="sm" fw={500} c="var(--lagoon-deep)">
+											{cert.issuer}
+										</Text>
+										<Text size="xs" c="var(--sea-ink-soft)">
+											Issued in {cert.issueDate}
+										</Text>
+										{cert.url && (
+											<Group gap={4} mt="xs">
+												<a
+													href={cert.url}
+													target="_blank"
+													rel="noreferrer"
+													className="text-xs text-blue-600 hover:underline inline-flex items-center gap-1"
+												>
+													View Credential <ExternalLink size={10} />
+												</a>
+											</Group>
+										)}
+									</Card>
+								))
+							)}
+						</Stack>
 					</section>
 				</Stack>
 			</SimpleGrid>
+			<Drawer
+				opened={drawerOpened}
+				onClose={() => setDrawerOpened(false)}
+				title={
+					<Title order={3} c="var(--sea-ink)">
+						Filters & Skills
+					</Title>
+				}
+				position="bottom"
+				size="80%"
+				hiddenFrom="md"
+				radius="md"
+				className="no-print"
+			>
+				{renderFilters()}
+			</Drawer>
+
+			<Affix position={{ bottom: 20, right: 20 }} hiddenFrom="md" className="no-print">
+				<Button
+					leftSection={<Filter size={16} />}
+					radius="xl"
+					size="md"
+					onClick={() => setDrawerOpened(true)}
+				>
+					Filters {(selectedSkill || searchQuery) ? "(Active)" : ""}
+				</Button>
+			</Affix>
 		</Container>
 	);
 }
