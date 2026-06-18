@@ -8,7 +8,14 @@ const backend = defineBackend({
   auth,
 });
 
-const { cfnUserPool } = backend.auth.resources.cfnResources;
+const { cfnUserPool, cfnUserPoolClient } = backend.auth.resources.cfnResources;
 cfnUserPool.adminCreateUserConfig = {
   allowAdminCreateUserOnly: true,
 };
+
+// Set login session timeout to 8 hours (typical workday)
+cfnUserPoolClient.refreshTokenValidity = 8;
+cfnUserPoolClient.tokenValidityUnits = {
+  refreshToken: 'hours',
+};
+

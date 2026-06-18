@@ -22,3 +22,5 @@ amplifyconfiguration.json
 .amplify-hosting/
 cdk.out/
 amplify-anthonyrlarsonui-*/
+
+.env.production
