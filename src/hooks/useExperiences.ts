@@ -28,12 +28,14 @@ export interface ExperienceRecord {
 const API_BASE_URL = import.meta.env.VITE_EXPERIENCE_API_URL || "";
 
 async function getHeaders() {
-	const headers: Record<string, string> = { "Content-Type": "application/json" };
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
 	try {
 		const session = await fetchAuthSession();
 		const idToken = session.tokens?.idToken?.toString();
 		if (idToken) {
-			headers["Authorization"] = idToken;
+			headers.Authorization = idToken;
 		}
 	} catch (e) {
 		console.warn("Could not fetch auth session", e);
@@ -43,7 +45,6 @@ async function getHeaders() {
 
 // Fetch all experiences
 async function fetchExperiences(): Promise<ExperienceRecord[]> {
-
 	const response = await fetch(`${API_BASE_URL}/experiences`);
 	if (!response.ok) {
 		throw new Error("Failed to fetch experiences");
@@ -99,19 +100,20 @@ export function useExperiencesQuery() {
 		select: (data) => {
 			return [...data].sort((a, b) => {
 				const getEndDate = (exp: ExperienceRecord) => {
-					if (!exp.employer.endDate || exp.employer.endDate === "Present") return Infinity;
+					if (!exp.employer.endDate || exp.employer.endDate === "Present")
+						return Infinity;
 					const parsed = new Date(exp.employer.endDate).getTime();
-					return isNaN(parsed) ? 0 : parsed;
+					return Number.isNaN(parsed) ? 0 : parsed;
 				};
 				const endA = getEndDate(a);
 				const endB = getEndDate(b);
-				
+
 				if (endA !== endB) return endB - endA;
-				
+
 				const getStartDate = (exp: ExperienceRecord) => {
 					if (!exp.employer.startDate) return 0;
 					const parsed = new Date(exp.employer.startDate).getTime();
-					return isNaN(parsed) ? 0 : parsed;
+					return Number.isNaN(parsed) ? 0 : parsed;
 				};
 				return getStartDate(b) - getStartDate(a);
 			});

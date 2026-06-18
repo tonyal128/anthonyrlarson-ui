@@ -1,48 +1,61 @@
-import { useState } from "react";
 import {
+	Alert,
+	Autocomplete,
 	Badge,
 	Button,
 	Card,
 	Group,
+	Loader,
 	Modal,
+	SimpleGrid,
 	Stack,
 	Text,
 	TextInput,
-	Autocomplete,
 	Title,
-	Loader,
-	Alert,
-	SimpleGrid,
 } from "@mantine/core";
 import {
-	Plus,
-	Trash2,
-	Edit,
-	Check,
 	AlertCircle,
 	Award,
+	Check,
+	Edit,
 	ExternalLink,
+	Plus,
+	Trash2,
 } from "lucide-react";
+import { useState } from "react";
 import {
+	type CertificationRecord,
 	useCertificationsQuery,
 	useCreateCertificationMutation,
-	useUpdateCertificationMutation,
 	useDeleteCertificationMutation,
-	type CertificationRecord,
+	useUpdateCertificationMutation,
 } from "../../hooks/useEducationCertifications";
 
 export default function CertificationsTab() {
-	const { data: certifications = [], isLoading, isError, error, refetch } = useCertificationsQuery();
+	const {
+		data: certifications = [],
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useCertificationsQuery();
 
 	const createMutation = useCreateCertificationMutation();
 	const updateMutation = useUpdateCertificationMutation();
 	const deleteMutation = useDeleteCertificationMutation();
 
 	const [opened, setOpened] = useState(false);
-	const [editingCert, setEditingCert] = useState<CertificationRecord | null>(null);
-	const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+	const [editingCert, setEditingCert] = useState<CertificationRecord | null>(
+		null,
+	);
+	const [statusMessage, setStatusMessage] = useState<{
+		type: "success" | "error";
+		text: string;
+	} | null>(null);
 
-	const uniqueIssuers = Array.from(new Set(certifications.map((c) => c.issuer).filter(Boolean))).sort();
+	const uniqueIssuers = Array.from(
+		new Set(certifications.map((c) => c.issuer).filter(Boolean)),
+	).sort();
 
 	// Form State
 	const [certName, setCertName] = useState("");
@@ -81,7 +94,10 @@ export default function CertificationsTab() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!certName.trim() || !certIssuer.trim() || !certIssueDate.trim()) {
-			showStatus("error", "Certification Name, Issuer, and Issue Date are required.");
+			showStatus(
+				"error",
+				"Certification Name, Issuer, and Issue Date are required.",
+			);
 			return;
 		}
 
@@ -103,7 +119,10 @@ export default function CertificationsTab() {
 			}
 			setOpened(false);
 		} catch (err) {
-			showStatus("error", err instanceof Error ? err.message : "Failed to save certification.");
+			showStatus(
+				"error",
+				err instanceof Error ? err.message : "Failed to save certification.",
+			);
 		}
 	};
 
@@ -113,7 +132,12 @@ export default function CertificationsTab() {
 				await deleteMutation.mutateAsync(id);
 				showStatus("success", "Certification deleted successfully!");
 			} catch (err) {
-				showStatus("error", err instanceof Error ? err.message : "Failed to delete certification.");
+				showStatus(
+					"error",
+					err instanceof Error
+						? err.message
+						: "Failed to delete certification.",
+				);
 			}
 		}
 	};
@@ -137,7 +161,13 @@ export default function CertificationsTab() {
 			{/* Status Message */}
 			{statusMessage && (
 				<Alert
-					icon={statusMessage.type === "success" ? <Check size={16} /> : <AlertCircle size={16} />}
+					icon={
+						statusMessage.type === "success" ? (
+							<Check size={16} />
+						) : (
+							<AlertCircle size={16} />
+						)
+					}
 					color={statusMessage.type === "success" ? "green" : "red"}
 					title={statusMessage.type === "success" ? "Success" : "Error"}
 					withCloseButton
@@ -153,11 +183,28 @@ export default function CertificationsTab() {
 					<Loader size="lg" />
 				</Group>
 			) : isError ? (
-				<Card shadow="sm" radius="lg" className="island-shell" p="xl" style={{ border: "1px solid var(--mantine-color-red-light)" }}>
+				<Card
+					shadow="sm"
+					radius="lg"
+					className="island-shell"
+					p="xl"
+					style={{ border: "1px solid var(--mantine-color-red-light)" }}
+				>
 					<Stack align="center" gap="md">
-						<Text c="red" fw={600}>Failed to load certifications.</Text>
-						<Text size="sm" c="dimmed">{error instanceof Error ? error.message : "Unknown error occurred"}</Text>
-						<Button size="sm" color="red" variant="light" onClick={() => refetch()}>
+						<Text c="red" fw={600}>
+							Failed to load certifications.
+						</Text>
+						<Text size="sm" c="dimmed">
+							{error instanceof Error
+								? error.message
+								: "Unknown error occurred"}
+						</Text>
+						<Button
+							size="sm"
+							color="red"
+							variant="light"
+							onClick={() => refetch()}
+						>
 							Retry
 						</Button>
 					</Stack>
@@ -166,8 +213,12 @@ export default function CertificationsTab() {
 				<Card shadow="sm" radius="lg" className="island-shell" p="xl">
 					<Stack align="center" py="xl" gap="md">
 						<Award size={40} className="text-gray-400" />
-						<Text c="dimmed" fw={500}>No certifications found.</Text>
-						<Button variant="light" onClick={handleOpenAdd}>Add certification</Button>
+						<Text c="dimmed" fw={500}>
+							No certifications found.
+						</Text>
+						<Button variant="light" onClick={handleOpenAdd}>
+							Add certification
+						</Button>
 					</Stack>
 				</Card>
 			) : (
@@ -179,7 +230,11 @@ export default function CertificationsTab() {
 							radius="lg"
 							className="island-shell"
 							p="xl"
-							style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "space-between",
+							}}
 						>
 							<Stack gap="sm">
 								<Group justify="space-between">

@@ -1,54 +1,64 @@
-import { useState, useMemo } from "react";
 import {
+	ActionIcon,
+	Alert,
 	Badge,
+	Box,
 	Button,
 	Card,
+	Checkbox,
 	Group,
 	List,
 	ListItem,
-	Modal,
-	Stack,
-	Text,
-	TextInput,
-	Textarea,
-	Title,
-	ActionIcon,
-	Checkbox,
-	Box,
 	Loader,
-	Alert,
+	Modal,
 	SimpleGrid,
+	Stack,
 	TagsInput,
+	Text,
+	Textarea,
+	TextInput,
+	Title,
 } from "@mantine/core";
 import { MonthPickerInput } from "@mantine/dates";
 import dayjs from "dayjs";
 import {
-	Plus,
-	Trash2,
-	Edit,
-	Check,
 	AlertCircle,
 	Briefcase,
+	Check,
+	Edit,
+	Plus,
+	Trash2,
 } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
-	useExperiencesQuery,
-	useCreateExperienceMutation,
-	useUpdateExperienceMutation,
-	useDeleteExperienceMutation,
-	type ExperienceRecord,
 	type ExperienceItem,
+	type ExperienceRecord,
+	useCreateExperienceMutation,
+	useDeleteExperienceMutation,
+	useExperiencesQuery,
+	useUpdateExperienceMutation,
 } from "../../hooks/useExperiences";
 
 export default function ExperienceTab() {
-	const { data: experiences = [], isLoading, isError, error, refetch } = useExperiencesQuery();
+	const {
+		data: experiences = [],
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useExperiencesQuery();
 
 	const createMutation = useCreateExperienceMutation();
 	const updateMutation = useUpdateExperienceMutation();
 	const deleteMutation = useDeleteExperienceMutation();
 
 	const [opened, setOpened] = useState(false);
-	const [editingExperience, setEditingExperience] = useState<ExperienceRecord | null>(null);
-	const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+	const [editingExperience, setEditingExperience] =
+		useState<ExperienceRecord | null>(null);
+	const [statusMessage, setStatusMessage] = useState<{
+		type: "success" | "error";
+		text: string;
+	} | null>(null);
 
 	// Form State
 	const [companyName, setCompanyName] = useState("");
@@ -56,7 +66,9 @@ export default function ExperienceTab() {
 	const [startDate, setStartDate] = useState<Date | null>(null);
 	const [endDate, setEndDate] = useState<Date | null>(null);
 	const [isPresent, setIsPresent] = useState(false);
-	const [bullets, setBullets] = useState<{ text: string; tags: string[] }>([{ text: "", tags: [] }]);
+	const [bullets, setBullets] = useState<{ text: string; tags: string[] }>([
+		{ text: "", tags: [] },
+	]);
 
 	const existingTags = useMemo(() => {
 		const tagsSet = new Set<string>();
@@ -92,13 +104,13 @@ export default function ExperienceTab() {
 		setEditingExperience(exp);
 		setCompanyName(exp.employer.name);
 		setJobTitle(exp.employer.jobTitle);
-		
+
 		const parsedStart = new Date(exp.employer.startDate);
-		setStartDate(!isNaN(parsedStart.getTime()) ? parsedStart : null);
-		
+		setStartDate(!Number.isNaN(parsedStart.getTime()) ? parsedStart : null);
+
 		if (exp.employer.endDate && exp.employer.endDate !== "Present") {
 			const parsedEnd = new Date(exp.employer.endDate);
-			setEndDate(!isNaN(parsedEnd.getTime()) ? parsedEnd : null);
+			setEndDate(!Number.isNaN(parsedEnd.getTime()) ? parsedEnd : null);
 		} else {
 			setEndDate(null);
 		}
@@ -115,7 +127,9 @@ export default function ExperienceTab() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const formattedStartDate = startDate ? dayjs(startDate).format("MMMM YYYY") : "";
+		const formattedStartDate = startDate
+			? dayjs(startDate).format("MMMM YYYY")
+			: "";
 		const formattedEndDate = endDate ? dayjs(endDate).format("MMMM YYYY") : "";
 
 		if (!jobTitle.trim() || !formattedStartDate) {
@@ -165,7 +179,10 @@ export default function ExperienceTab() {
 			}
 			setOpened(false);
 		} catch (err) {
-			showStatus("error", err instanceof Error ? err.message : "Failed to save experience.");
+			showStatus(
+				"error",
+				err instanceof Error ? err.message : "Failed to save experience.",
+			);
 		}
 	};
 
@@ -175,7 +192,10 @@ export default function ExperienceTab() {
 				await deleteMutation.mutateAsync(id);
 				showStatus("success", "Experience deleted successfully!");
 			} catch (err) {
-				showStatus("error", err instanceof Error ? err.message : "Failed to delete experience.");
+				showStatus(
+					"error",
+					err instanceof Error ? err.message : "Failed to delete experience.",
+				);
 			}
 		}
 	};
@@ -199,7 +219,13 @@ export default function ExperienceTab() {
 			{/* Status Message */}
 			{statusMessage && (
 				<Alert
-					icon={statusMessage.type === "success" ? <Check size={16} /> : <AlertCircle size={16} />}
+					icon={
+						statusMessage.type === "success" ? (
+							<Check size={16} />
+						) : (
+							<AlertCircle size={16} />
+						)
+					}
 					color={statusMessage.type === "success" ? "green" : "red"}
 					title={statusMessage.type === "success" ? "Success" : "Error"}
 					withCloseButton
@@ -215,11 +241,28 @@ export default function ExperienceTab() {
 					<Loader size="lg" />
 				</Group>
 			) : isError ? (
-				<Card shadow="sm" radius="lg" className="island-shell" p="xl" style={{ border: "1px solid var(--mantine-color-red-light)" }}>
+				<Card
+					shadow="sm"
+					radius="lg"
+					className="island-shell"
+					p="xl"
+					style={{ border: "1px solid var(--mantine-color-red-light)" }}
+				>
 					<Stack align="center" gap="md">
-						<Text c="red" fw={600}>Failed to load experiences from API.</Text>
-						<Text size="sm" c="dimmed">{error instanceof Error ? error.message : "Unknown error occurred"}</Text>
-						<Button size="sm" color="red" variant="light" onClick={() => refetch()}>
+						<Text c="red" fw={600}>
+							Failed to load experiences from API.
+						</Text>
+						<Text size="sm" c="dimmed">
+							{error instanceof Error
+								? error.message
+								: "Unknown error occurred"}
+						</Text>
+						<Button
+							size="sm"
+							color="red"
+							variant="light"
+							onClick={() => refetch()}
+						>
 							Retry
 						</Button>
 					</Stack>
@@ -228,8 +271,12 @@ export default function ExperienceTab() {
 				<Card shadow="sm" radius="lg" className="island-shell" p="xl">
 					<Stack align="center" py="xl" gap="md">
 						<Briefcase size={40} className="text-gray-400" />
-						<Text c="dimmed" fw={500}>No experience items found.</Text>
-						<Button variant="light" onClick={handleOpenAdd}>Add your first experience</Button>
+						<Text c="dimmed" fw={500}>
+							No experience items found.
+						</Text>
+						<Button variant="light" onClick={handleOpenAdd}>
+							Add your first experience
+						</Button>
 					</Stack>
 				</Card>
 			) : (
@@ -244,7 +291,11 @@ export default function ExperienceTab() {
 								radius="lg"
 								className="island-shell"
 								p="xl"
-								style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									justifyContent: "space-between",
+								}}
 							>
 								<Stack gap="md" style={{ flexGrow: 1 }}>
 									<Group justify="space-between" align="flex-start">
@@ -271,7 +322,12 @@ export default function ExperienceTab() {
 												{item.technologies && item.technologies.length > 0 && (
 													<Group gap={4} mt={4}>
 														{item.technologies.map((tech, tIdx) => (
-															<Badge key={tIdx} variant="outline" size="xs" color="gray">
+															<Badge
+																key={tIdx}
+																variant="outline"
+																size="xs"
+																color="gray"
+															>
 																{tech.name}
 															</Badge>
 														))}
@@ -375,7 +431,11 @@ export default function ExperienceTab() {
 												onClick={() => {
 													const newBullets = [...bullets];
 													newBullets.splice(index, 1);
-													setBullets(newBullets.length > 0 ? newBullets : [{ text: "", tags: [] }]);
+													setBullets(
+														newBullets.length > 0
+															? newBullets
+															: [{ text: "", tags: [] }],
+													);
 												}}
 												size="sm"
 											>
@@ -388,7 +448,10 @@ export default function ExperienceTab() {
 												value={bullet.text}
 												onChange={(e) => {
 													const newBullets = [...bullets];
-													newBullets[index] = { ...newBullets[index], text: e.currentTarget.value };
+													newBullets[index] = {
+														...newBullets[index],
+														text: e.currentTarget.value,
+													};
 													setBullets(newBullets);
 												}}
 												autosize
@@ -405,7 +468,10 @@ export default function ExperienceTab() {
 												value={bullet.tags}
 												onChange={(value) => {
 													const newBullets = [...bullets];
-													newBullets[index] = { ...newBullets[index], tags: value };
+													newBullets[index] = {
+														...newBullets[index],
+														tags: value,
+													};
 													setBullets(newBullets);
 												}}
 											/>

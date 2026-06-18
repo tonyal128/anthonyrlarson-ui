@@ -25,12 +25,14 @@ const EDU_API_BASE_URL = import.meta.env.VITE_EDUCATION_API_URL || "";
 const CERT_API_BASE_URL = import.meta.env.VITE_CERTIFICATIONS_API_URL || "";
 
 async function getHeaders() {
-	const headers: Record<string, string> = { "Content-Type": "application/json" };
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
 	try {
 		const session = await fetchAuthSession();
 		const idToken = session.tokens?.idToken?.toString();
 		if (idToken) {
-			headers["Authorization"] = idToken;
+			headers.Authorization = idToken;
 		}
 	} catch (e) {
 		console.warn("Could not fetch auth session", e);
@@ -63,7 +65,10 @@ function getLocalStorageEdu(): EducationRecord[] {
 	if (typeof window === "undefined") return initialEducation;
 	const data = localStorage.getItem(LOCAL_STORAGE_EDU_KEY);
 	if (!data) {
-		localStorage.setItem(LOCAL_STORAGE_EDU_KEY, JSON.stringify(initialEducation));
+		localStorage.setItem(
+			LOCAL_STORAGE_EDU_KEY,
+			JSON.stringify(initialEducation),
+		);
 		return initialEducation;
 	}
 	try {
@@ -82,7 +87,10 @@ function getLocalStorageCert(): CertificationRecord[] {
 	if (typeof window === "undefined") return initialCertifications;
 	const data = localStorage.getItem(LOCAL_STORAGE_CERT_KEY);
 	if (!data) {
-		localStorage.setItem(LOCAL_STORAGE_CERT_KEY, JSON.stringify(initialCertifications));
+		localStorage.setItem(
+			LOCAL_STORAGE_CERT_KEY,
+			JSON.stringify(initialCertifications),
+		);
 		return initialCertifications;
 	}
 	try {
@@ -111,12 +119,16 @@ async function fetchEducation(): Promise<EducationRecord[]> {
 			if (response.status === 404 || response.status === 403) {
 				return []; // Treat missing endpoints or auth errors as empty lists
 			}
-			throw new Error(`Failed to fetch education records: ${response.statusText}`);
+			throw new Error(
+				`Failed to fetch education records: ${response.statusText}`,
+			);
 		}
 		return await response.json();
 	} catch (error: any) {
 		if (error.message === "Failed to fetch") {
-			console.warn("Education API is unreachable (possibly CORS or empty table). Treating as empty list.");
+			console.warn(
+				"Education API is unreachable (possibly CORS or empty table). Treating as empty list.",
+			);
 			return [];
 		}
 		throw error;
@@ -205,7 +217,9 @@ async function fetchCertifications(): Promise<CertificationRecord[]> {
 		return await response.json();
 	} catch (error: any) {
 		if (error.message === "Failed to fetch") {
-			console.warn("Certifications API is unreachable (possibly CORS or empty table). Treating as empty list.");
+			console.warn(
+				"Certifications API is unreachable (possibly CORS or empty table). Treating as empty list.",
+			);
 			return [];
 		}
 		throw error;

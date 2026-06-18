@@ -1,17 +1,23 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
-import CertificationsTab from "./CertificationsTab";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as hooks from "../../hooks/useEducationCertifications";
+import CertificationsTab from "./CertificationsTab";
 
 vi.mock("../../hooks/useEducationCertifications");
 
 describe("CertificationsTab Component", () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
-		vi.mocked(hooks.useCreateCertificationMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
-		vi.mocked(hooks.useUpdateCertificationMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
-		vi.mocked(hooks.useDeleteCertificationMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
+		vi.mocked(hooks.useCreateCertificationMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
+		vi.mocked(hooks.useUpdateCertificationMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
+		vi.mocked(hooks.useDeleteCertificationMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
 	});
 
 	it("renders loading state", () => {
@@ -24,16 +30,16 @@ describe("CertificationsTab Component", () => {
 		const { container } = render(
 			<MantineProvider>
 				<CertificationsTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
-		
+
 		expect(container.querySelector(".mantine-Loader-root")).toBeDefined();
 	});
 
 	it("renders certifications list", () => {
 		vi.mocked(hooks.useCertificationsQuery).mockReturnValue({
 			data: [
-				{ id: "1", name: "AWS Developer", issuer: "Amazon", issueDate: "2023" }
+				{ id: "1", name: "AWS Developer", issuer: "Amazon", issueDate: "2023" },
 			],
 			isLoading: false,
 			isError: false,
@@ -42,7 +48,7 @@ describe("CertificationsTab Component", () => {
 		render(
 			<MantineProvider>
 				<CertificationsTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
 
 		expect(screen.getByText("AWS Developer")).toBeDefined();
@@ -59,12 +65,16 @@ describe("CertificationsTab Component", () => {
 		render(
 			<MantineProvider>
 				<CertificationsTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
 
 		const addButton = screen.getByText("Add Certification");
 		fireEvent.click(addButton);
 
-		expect(await screen.findByText("Add Certification", { selector: '.mantine-Modal-title' })).toBeDefined();
+		expect(
+			await screen.findByText("Add Certification", {
+				selector: ".mantine-Modal-title",
+			}),
+		).toBeDefined();
 	});
 });

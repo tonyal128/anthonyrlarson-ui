@@ -1,17 +1,23 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
-import EducationTab from "./EducationTab";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as hooks from "../../hooks/useEducationCertifications";
+import EducationTab from "./EducationTab";
 
 vi.mock("../../hooks/useEducationCertifications");
 
 describe("EducationTab Component", () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
-		vi.mocked(hooks.useCreateEducationMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
-		vi.mocked(hooks.useUpdateEducationMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
-		vi.mocked(hooks.useDeleteEducationMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
+		vi.mocked(hooks.useCreateEducationMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
+		vi.mocked(hooks.useUpdateEducationMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
+		vi.mocked(hooks.useDeleteEducationMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
 	});
 
 	it("renders loading state", () => {
@@ -24,16 +30,21 @@ describe("EducationTab Component", () => {
 		const { container } = render(
 			<MantineProvider>
 				<EducationTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
-		
+
 		expect(container.querySelector(".mantine-Loader-root")).toBeDefined();
 	});
 
 	it("renders education list", () => {
 		vi.mocked(hooks.useEducationQuery).mockReturnValue({
 			data: [
-				{ id: "1", degree: "B.S. Computer Science", institution: "University", period: "2018 - 2022" }
+				{
+					id: "1",
+					degree: "B.S. Computer Science",
+					institution: "University",
+					period: "2018 - 2022",
+				},
 			],
 			isLoading: false,
 			isError: false,
@@ -42,7 +53,7 @@ describe("EducationTab Component", () => {
 		render(
 			<MantineProvider>
 				<EducationTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
 
 		expect(screen.getByText("B.S. Computer Science")).toBeDefined();
@@ -59,12 +70,16 @@ describe("EducationTab Component", () => {
 		render(
 			<MantineProvider>
 				<EducationTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
 
 		const addButton = screen.getByText("Add Education");
 		fireEvent.click(addButton);
 
-		expect(await screen.findByText("Add Education", { selector: '.mantine-Modal-title' })).toBeDefined();
+		expect(
+			await screen.findByText("Add Education", {
+				selector: ".mantine-Modal-title",
+			}),
+		).toBeDefined();
 	});
 });

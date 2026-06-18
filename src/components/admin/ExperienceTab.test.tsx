@@ -1,17 +1,23 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
-import ExperienceTab from "./ExperienceTab";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as hooks from "../../hooks/useExperiences";
+import ExperienceTab from "./ExperienceTab";
 
 vi.mock("../../hooks/useExperiences");
 
 describe("ExperienceTab Component", () => {
 	beforeEach(() => {
 		vi.resetAllMocks();
-		vi.mocked(hooks.useCreateExperienceMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
-		vi.mocked(hooks.useUpdateExperienceMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
-		vi.mocked(hooks.useDeleteExperienceMutation).mockReturnValue({ mutateAsync: vi.fn() } as any);
+		vi.mocked(hooks.useCreateExperienceMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
+		vi.mocked(hooks.useUpdateExperienceMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
+		vi.mocked(hooks.useDeleteExperienceMutation).mockReturnValue({
+			mutateAsync: vi.fn(),
+		} as any);
 	});
 
 	it("renders loading state", () => {
@@ -24,24 +30,24 @@ describe("ExperienceTab Component", () => {
 		const { container } = render(
 			<MantineProvider>
 				<ExperienceTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
-		
+
 		expect(container.querySelector(".mantine-Loader-root")).toBeDefined();
 	});
 
 	it("renders experience list", () => {
 		vi.mocked(hooks.useExperiencesQuery).mockReturnValue({
 			data: [
-				{ 
-					id: "1", 
+				{
+					id: "1",
 					employer: {
 						name: "Tech Corp",
 						jobTitle: "Software Engineer",
 						startDate: "2020",
-						experience: []
-					}
-				}
+						experience: [],
+					},
+				},
 			],
 			isLoading: false,
 			isError: false,
@@ -50,7 +56,7 @@ describe("ExperienceTab Component", () => {
 		render(
 			<MantineProvider>
 				<ExperienceTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
 
 		expect(screen.getByText("Tech Corp")).toBeDefined();
@@ -67,12 +73,16 @@ describe("ExperienceTab Component", () => {
 		render(
 			<MantineProvider>
 				<ExperienceTab />
-			</MantineProvider>
+			</MantineProvider>,
 		);
 
 		const addButton = screen.getByText("Add Experience");
 		fireEvent.click(addButton);
 
-		expect(await screen.findByText("Add Experience", { selector: '.mantine-Modal-title' })).toBeDefined();
+		expect(
+			await screen.findByText("Add Experience", {
+				selector: ".mantine-Modal-title",
+			}),
+		).toBeDefined();
 	});
 });

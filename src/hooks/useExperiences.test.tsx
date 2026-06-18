@@ -1,5 +1,5 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
 	useCreateExperienceMutation,
@@ -21,7 +21,11 @@ const createTestQueryClient = () =>
 
 describe("useExperiences Hooks", () => {
 	let queryClient: QueryClient;
-	let wrapper: ({ children }: { children: React.ReactNode }) => React.JSX.Element;
+	let wrapper: ({
+		children,
+	}: {
+		children: React.ReactNode;
+	}) => React.JSX.Element;
 
 	let mockExperiences = [];
 
@@ -32,7 +36,10 @@ describe("useExperiences Hooks", () => {
 		);
 
 		mockExperiences = [
-			{ id: "1", employer: { name: "Company A", jobTitle: "Dev", startDate: "2020" } }
+			{
+				id: "1",
+				employer: { name: "Company A", jobTitle: "Dev", startDate: "2020" },
+			},
 		];
 
 		global.fetch = vi.fn(async (url, options) => {
@@ -48,12 +55,14 @@ describe("useExperiences Hooks", () => {
 				}
 				if (options.method === "PUT") {
 					const body = JSON.parse(options.body);
-					mockExperiences = mockExperiences.map(e => e.id === body.id ? body : e);
+					mockExperiences = mockExperiences.map((e) =>
+						e.id === body.id ? body : e,
+					);
 					return { ok: true, json: async () => body };
 				}
 				if (options.method === "DELETE") {
 					const id = url.split("/").pop();
-					mockExperiences = mockExperiences.filter(e => e.id !== id);
+					mockExperiences = mockExperiences.filter((e) => e.id !== id);
 					return { ok: true };
 				}
 			}
@@ -70,40 +79,66 @@ describe("useExperiences Hooks", () => {
 	});
 
 	it("should successfully add a new experience via API", async () => {
-		const { result } = renderHook(() => ({
-			query: useExperiencesQuery(),
-			create: useCreateExperienceMutation(),
-		}), { wrapper });
+		const { result } = renderHook(
+			() => ({
+				query: useExperiencesQuery(),
+				create: useCreateExperienceMutation(),
+			}),
+			{ wrapper },
+		);
 
 		await waitFor(() => expect(result.current.query.isSuccess).toBe(true));
 
 		await act(async () => {
-			await result.current.create.mutateAsync({ employer: { name: "New Co", jobTitle: "Lead", startDate: "2021", experience: [] } });
+			await result.current.create.mutateAsync({
+				employer: {
+					name: "New Co",
+					jobTitle: "Lead",
+					startDate: "2021",
+					experience: [],
+				},
+			});
 		});
 
 		await waitFor(() => expect(result.current.query.data).toHaveLength(2));
 	});
 
 	it("should update an existing experience via API", async () => {
-		const { result } = renderHook(() => ({
-			query: useExperiencesQuery(),
-			update: useUpdateExperienceMutation(),
-		}), { wrapper });
+		const { result } = renderHook(
+			() => ({
+				query: useExperiencesQuery(),
+				update: useUpdateExperienceMutation(),
+			}),
+			{ wrapper },
+		);
 
 		await waitFor(() => expect(result.current.query.isSuccess).toBe(true));
 
 		await act(async () => {
-			await result.current.update.mutateAsync({ id: "1", employer: { name: "Company B", jobTitle: "Manager", startDate: "2020", experience: [] } });
+			await result.current.update.mutateAsync({
+				id: "1",
+				employer: {
+					name: "Company B",
+					jobTitle: "Manager",
+					startDate: "2020",
+					experience: [],
+				},
+			});
 		});
 
-		await waitFor(() => expect(result.current.query.data?.[0].employer.name).toBe("Company B"));
+		await waitFor(() =>
+			expect(result.current.query.data?.[0].employer.name).toBe("Company B"),
+		);
 	});
 
 	it("should delete an experience via API", async () => {
-		const { result } = renderHook(() => ({
-			query: useExperiencesQuery(),
-			remove: useDeleteExperienceMutation(),
-		}), { wrapper });
+		const { result } = renderHook(
+			() => ({
+				query: useExperiencesQuery(),
+				remove: useDeleteExperienceMutation(),
+			}),
+			{ wrapper },
+		);
 
 		await waitFor(() => expect(result.current.query.isSuccess).toBe(true));
 

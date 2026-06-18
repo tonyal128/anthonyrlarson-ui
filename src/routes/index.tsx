@@ -1,39 +1,60 @@
 import {
+	Affix,
 	Badge,
+	Box,
 	Button,
 	Card,
+	CloseButton,
 	Container,
+	Drawer,
 	Group,
 	List,
 	ListItem,
+	SegmentedControl,
 	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
+	TextInput,
 	ThemeIcon,
 	Title,
-	TextInput,
-	SegmentedControl,
-	CloseButton,
-	Drawer,
-	Affix,
-	Box,
 } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
+import {
+	Award,
+	Briefcase,
+	ExternalLink,
+	Filter,
+	GraduationCap,
+	Printer,
+	Search,
+	Wrench,
+	X,
+} from "lucide-react";
 import { useState } from "react";
-import { Briefcase, GraduationCap, Wrench, Award, ExternalLink, Search, X, Printer, Filter } from "lucide-react";
+import {
+	useCertificationsQuery,
+	useEducationQuery,
+} from "../hooks/useEducationCertifications";
 import { useExperiencesQuery } from "../hooks/useExperiences";
-import { useEducationQuery, useCertificationsQuery } from "../hooks/useEducationCertifications";
 
 export const Route = createFileRoute("/")({ component: Home });
 
 export function Home() {
-	const { data: experiences = [], isLoading, isError, error, refetch } = useExperiencesQuery();
+	const {
+		data: experiences = [],
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useExperiencesQuery();
 	const { data: educations = [] } = useEducationQuery();
 	const { data: certifications = [] } = useCertificationsQuery();
 	const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [filterMode, setFilterMode] = useState<"highlight" | "hide">("highlight");
+	const [filterMode, setFilterMode] = useState<"highlight" | "hide">(
+		"highlight",
+	);
 	const [drawerOpened, setDrawerOpened] = useState(false);
 	const [showAllSkills, setShowAllSkills] = useState(false);
 	const VISIBLE_SKILLS_LIMIT = 12;
@@ -42,8 +63,8 @@ export function Home() {
 	const derivedSkills = Array.from(
 		new Set(
 			experiences.flatMap((exp) =>
-				exp.employer.experience.flatMap((bullet) =>
-					bullet.technologies?.map((tech) => tech.name) || [],
+				exp.employer.experience.flatMap(
+					(bullet) => bullet.technologies?.map((tech) => tech.name) || [],
 				),
 			),
 		),
@@ -52,7 +73,7 @@ export function Home() {
 	const skillsToDisplay = searchQuery.trim()
 		? derivedSkills.filter((skill) =>
 				skill.toLowerCase().includes(searchQuery.trim().toLowerCase()),
-		  )
+			)
 		: derivedSkills;
 
 	// 2. Filter experiences by search query and selected skill
@@ -64,9 +85,12 @@ export function Home() {
 		if (queryLower) {
 			const titleMatch = job.jobTitle.toLowerCase().includes(queryLower);
 			const companyMatch = job.name.toLowerCase().includes(queryLower);
-			const bulletMatch = job.experience.some((bullet) =>
-				bullet.text.toLowerCase().includes(queryLower) ||
-				bullet.technologies?.some((tech) => tech.name.toLowerCase().includes(queryLower))
+			const bulletMatch = job.experience.some(
+				(bullet) =>
+					bullet.text.toLowerCase().includes(queryLower) ||
+					bullet.technologies?.some((tech) =>
+						tech.name.toLowerCase().includes(queryLower),
+					),
 			);
 			matchesSearch = titleMatch || companyMatch || bulletMatch;
 		}
@@ -76,13 +100,14 @@ export function Home() {
 			const skillLower = selectedSkill.toLowerCase();
 			const titleMatch = job.jobTitle.toLowerCase().includes(skillLower);
 			const companyMatch = job.name.toLowerCase().includes(skillLower);
-			const bulletMatch = job.experience.some((bullet) =>
-				bullet.text.toLowerCase().includes(skillLower) ||
-				bullet.technologies?.some(
-					(tech) =>
-						tech.name.toLowerCase().includes(skillLower) ||
-						tech.tags.some((tag) => tag.toLowerCase().includes(skillLower))
-				)
+			const bulletMatch = job.experience.some(
+				(bullet) =>
+					bullet.text.toLowerCase().includes(skillLower) ||
+					bullet.technologies?.some(
+						(tech) =>
+							tech.name.toLowerCase().includes(skillLower) ||
+							tech.tags.some((tag) => tag.toLowerCase().includes(skillLower)),
+					),
 			);
 			matchesSkill = titleMatch || companyMatch || bulletMatch;
 		}
@@ -124,10 +149,22 @@ export function Home() {
 
 			<Group gap="xs" mt="xs">
 				{skillsToDisplay.length === 0 ? (
-					<Text size="sm" c="var(--sea-ink-soft)" fs="italic" w="100%" ta="center">No skills found. Add technologies to your experiences to see them here.</Text>
+					<Text
+						size="sm"
+						c="var(--sea-ink-soft)"
+						fs="italic"
+						w="100%"
+						ta="center"
+					>
+						No skills found. Add technologies to your experiences to see them
+						here.
+					</Text>
 				) : (
 					<>
-						{(showAllSkills ? skillsToDisplay : skillsToDisplay.slice(0, VISIBLE_SKILLS_LIMIT)).map((skill) => {
+						{(showAllSkills
+							? skillsToDisplay
+							: skillsToDisplay.slice(0, VISIBLE_SKILLS_LIMIT)
+						).map((skill) => {
 							const isActive = selectedSkill === skill;
 							return (
 								<Badge
@@ -150,7 +187,9 @@ export function Home() {
 								onClick={() => setShowAllSkills(!showAllSkills)}
 								style={{ padding: "0 8px" }}
 							>
-								{showAllSkills ? "Show Less" : `+${skillsToDisplay.length - VISIBLE_SKILLS_LIMIT} More`}
+								{showAllSkills
+									? "Show Less"
+									: `+${skillsToDisplay.length - VISIBLE_SKILLS_LIMIT} More`}
 							</Button>
 						)}
 					</>
@@ -269,7 +308,13 @@ export function Home() {
 						<Stack gap="xl">
 							{isLoading &&
 								[1, 2, 3].map((n) => (
-									<Card key={n} shadow="sm" radius="lg" className="island-shell" p="xl">
+									<Card
+										key={n}
+										shadow="sm"
+										radius="lg"
+										className="island-shell"
+										p="xl"
+									>
 										<Skeleton height={24} width="60%" mb="md" />
 										<Skeleton height={16} width="40%" mb="xl" />
 										<Stack gap="xs">
@@ -281,11 +326,28 @@ export function Home() {
 								))}
 
 							{isError && (
-								<Card shadow="sm" radius="lg" className="island-shell" p="xl" style={{ border: "1px solid var(--mantine-color-red-light)" }}>
+								<Card
+									shadow="sm"
+									radius="lg"
+									className="island-shell"
+									p="xl"
+									style={{ border: "1px solid var(--mantine-color-red-light)" }}
+								>
 									<Stack align="flex-start" gap="md">
-										<Text c="red" fw={600}>Failed to load work experiences.</Text>
-										<Text size="sm" c="dimmed">{error instanceof Error ? error.message : "Unknown error occurred"}</Text>
-										<Button size="xs" color="red" variant="light" onClick={() => refetch()}>
+										<Text c="red" fw={600}>
+											Failed to load work experiences.
+										</Text>
+										<Text size="sm" c="dimmed">
+											{error instanceof Error
+												? error.message
+												: "Unknown error occurred"}
+										</Text>
+										<Button
+											size="xs"
+											color="red"
+											variant="light"
+											onClick={() => refetch()}
+										>
 											Retry
 										</Button>
 									</Stack>
@@ -294,25 +356,39 @@ export function Home() {
 
 							{!isLoading && !isError && experiences.length === 0 && (
 								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
-									<Text c="var(--sea-ink-soft)" ta="center" fs="italic">No work experiences have been added yet.</Text>
-								</Card>
-							)}
-
-							{!isLoading && !isError && (filterMode === "hide" && filteredExperiences.length === 0) && (
-								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
-									<Text c="dimmed" ta="center">No matching experiences for the selected filters.</Text>
+									<Text c="var(--sea-ink-soft)" ta="center" fs="italic">
+										No work experiences have been added yet.
+									</Text>
 								</Card>
 							)}
 
 							{!isLoading &&
 								!isError &&
-								(filterMode === "highlight" ? experiences : filteredExperiences).map((exp, index) => {
+								filterMode === "hide" &&
+								filteredExperiences.length === 0 && (
+									<Card shadow="sm" radius="lg" className="island-shell" p="xl">
+										<Text c="dimmed" ta="center">
+											No matching experiences for the selected filters.
+										</Text>
+									</Card>
+								)}
+
+							{!isLoading &&
+								!isError &&
+								(filterMode === "highlight"
+									? experiences
+									: filteredExperiences
+								).map((exp, index) => {
 									const job = exp.employer;
 									const period = `${job.startDate} - ${job.endDate || "Present"}`;
 
 									// Determine if this experience matches the active filter criteria
-									const isMatched = filteredExperiences.some((f) => f.id === exp.id);
-									const hasActiveFilter = !!(selectedSkill || searchQuery.trim());
+									const isMatched = filteredExperiences.some(
+										(f) => f.id === exp.id,
+									);
+									const hasActiveFilter = !!(
+										selectedSkill || searchQuery.trim()
+									);
 
 									return (
 										<Card
@@ -324,9 +400,18 @@ export function Home() {
 												animationDelay: `${index * 90 + 80}ms`,
 												transition: "all 0.3s ease",
 												opacity: hasActiveFilter && !isMatched ? 0.35 : 1,
-												transform: hasActiveFilter && isMatched ? "scale(1.015)" : "scale(1)",
-												border: hasActiveFilter && isMatched ? "2px solid var(--mantine-color-blue-filled)" : "1px solid transparent",
-												boxShadow: hasActiveFilter && isMatched ? "0 8px 30px rgba(34, 139, 230, 0.15)" : undefined,
+												transform:
+													hasActiveFilter && isMatched
+														? "scale(1.015)"
+														: "scale(1)",
+												border:
+													hasActiveFilter && isMatched
+														? "2px solid var(--mantine-color-blue-filled)"
+														: "1px solid transparent",
+												boxShadow:
+													hasActiveFilter && isMatched
+														? "0 8px 30px rgba(34, 139, 230, 0.15)"
+														: undefined,
 											}}
 											p="xl"
 										>
@@ -347,9 +432,12 @@ export function Home() {
 													let matchesSearch = true;
 													if (searchQuery.trim()) {
 														const queryLower = searchQuery.trim().toLowerCase();
-														const textMatch = bullet.text.toLowerCase().includes(queryLower);
+														const textMatch = bullet.text
+															.toLowerCase()
+															.includes(queryLower);
 														const techMatch = bullet.technologies?.some(
-															(tech) => tech.name.toLowerCase().includes(queryLower),
+															(tech) =>
+																tech.name.toLowerCase().includes(queryLower),
 														);
 														matchesSearch = textMatch || (techMatch ?? false);
 													}
@@ -357,46 +445,78 @@ export function Home() {
 													let matchesSkill = true;
 													if (selectedSkill) {
 														const skillLower = selectedSkill.toLowerCase();
-														const textMatch = bullet.text.toLowerCase().includes(skillLower);
+														const textMatch = bullet.text
+															.toLowerCase()
+															.includes(skillLower);
 														const techMatch = bullet.technologies?.some(
 															(tech) =>
 																tech.name.toLowerCase().includes(skillLower) ||
-																tech.tags.some((tag) => tag.toLowerCase().includes(skillLower)),
+																tech.tags.some((tag) =>
+																	tag.toLowerCase().includes(skillLower),
+																),
 														);
 														matchesSkill = textMatch || (techMatch ?? false);
 													}
 
 													const isBulletMatched = matchesSearch && matchesSkill;
-													const hasActiveFilter = !!(selectedSkill || searchQuery.trim());
+													const hasActiveFilter = !!(
+														selectedSkill || searchQuery.trim()
+													);
 
 													return (
 														<ListItem
 															key={bullet.text + idx}
 															style={{
 																transition: "all 0.2s ease",
-																opacity: hasActiveFilter && !isBulletMatched ? 0.3 : 1,
+																opacity:
+																	hasActiveFilter && !isBulletMatched ? 0.3 : 1,
 															}}
 														>
 															<Text
 																size="sm"
-																fw={hasActiveFilter && isBulletMatched ? 600 : 400}
-																c={hasActiveFilter && isBulletMatched ? "var(--sea-ink)" : undefined}
+																fw={
+																	hasActiveFilter && isBulletMatched ? 600 : 400
+																}
+																c={
+																	hasActiveFilter && isBulletMatched
+																		? "var(--sea-ink)"
+																		: undefined
+																}
 																style={{ display: "inline" }}
 															>
 																{bullet.text}
 															</Text>
-															{bullet.technologies && bullet.technologies.some(tech => 
-																selectedSkill?.toLowerCase() === tech.name.toLowerCase() ||
-																(searchQuery.trim() && tech.name.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+															{bullet.technologies?.some(
+																(tech) =>
+																	selectedSkill?.toLowerCase() ===
+																		tech.name.toLowerCase() ||
+																	(searchQuery.trim() &&
+																		tech.name
+																			.toLowerCase()
+																			.includes(
+																				searchQuery.trim().toLowerCase(),
+																			)),
 															) && (
 																<Group gap={4} mt={4}>
 																	{bullet.technologies
-																		.filter(tech => 
-																			selectedSkill?.toLowerCase() === tech.name.toLowerCase() ||
-																			(searchQuery.trim() && tech.name.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+																		.filter(
+																			(tech) =>
+																				selectedSkill?.toLowerCase() ===
+																					tech.name.toLowerCase() ||
+																				(searchQuery.trim() &&
+																					tech.name
+																						.toLowerCase()
+																						.includes(
+																							searchQuery.trim().toLowerCase(),
+																						)),
 																		)
 																		.map((tech, tIdx) => (
-																			<Badge key={tIdx} variant="filled" size="xs" color="blue">
+																			<Badge
+																				key={tIdx}
+																				variant="filled"
+																				size="xs"
+																				color="blue"
+																			>
 																				{tech.name}
 																			</Badge>
 																		))}
@@ -413,7 +533,10 @@ export function Home() {
 					</section>
 				</Stack>
 
-				<Stack gap="xl" style={{ position: "sticky", top: "100px", alignSelf: "start" }}>
+				<Stack
+					gap="xl"
+					style={{ position: "sticky", top: "100px", alignSelf: "start" }}
+				>
 					{/* Skills Section */}
 					<Box visibleFrom="md" className="no-print">
 						<section id="skills" className="scroll-mt-24">
@@ -451,7 +574,14 @@ export function Home() {
 						<Stack gap="md">
 							{educations.length === 0 ? (
 								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
-									<Text size="sm" c="var(--sea-ink-soft)" ta="center" fs="italic">No education history has been added yet.</Text>
+									<Text
+										size="sm"
+										c="var(--sea-ink-soft)"
+										ta="center"
+										fs="italic"
+									>
+										No education history has been added yet.
+									</Text>
 								</Card>
 							) : (
 								educations.map((edu) => (
@@ -468,7 +598,11 @@ export function Home() {
 										<Text size="sm" fw={500} c="var(--lagoon-deep)" mb="xs">
 											{edu.institution}
 										</Text>
-										<Text size="sm" c="var(--sea-ink-soft)" mb={edu.description ? "xs" : undefined}>
+										<Text
+											size="sm"
+											c="var(--sea-ink-soft)"
+											mb={edu.description ? "xs" : undefined}
+										>
 											{edu.period}
 										</Text>
 										{edu.description && (
@@ -483,7 +617,11 @@ export function Home() {
 					</section>
 
 					{/* Certifications Section */}
-					<section id="certifications" className="scroll-mt-24" style={{ marginTop: "24px" }}>
+					<section
+						id="certifications"
+						className="scroll-mt-24"
+						style={{ marginTop: "24px" }}
+					>
 						<Group mb="xl" wrap="nowrap">
 							<ThemeIcon size="lg" variant="light" color="blue" radius="md">
 								<Award size={20} suppressHydrationWarning />
@@ -496,7 +634,14 @@ export function Home() {
 						<Stack gap="md">
 							{certifications.length === 0 ? (
 								<Card shadow="sm" radius="lg" className="island-shell" p="xl">
-									<Text size="sm" c="var(--sea-ink-soft)" ta="center" fs="italic">No certifications have been added yet.</Text>
+									<Text
+										size="sm"
+										c="var(--sea-ink-soft)"
+										ta="center"
+										fs="italic"
+									>
+										No certifications have been added yet.
+									</Text>
 								</Card>
 							) : (
 								certifications.map((cert) => (
@@ -552,14 +697,18 @@ export function Home() {
 				{renderFilters()}
 			</Drawer>
 
-			<Affix position={{ bottom: 20, right: 20 }} hiddenFrom="md" className="no-print">
+			<Affix
+				position={{ bottom: 20, right: 20 }}
+				hiddenFrom="md"
+				className="no-print"
+			>
 				<Button
 					leftSection={<Filter size={16} />}
 					radius="xl"
 					size="md"
 					onClick={() => setDrawerOpened(true)}
 				>
-					Filters {(selectedSkill || searchQuery) ? "(Active)" : ""}
+					Filters {selectedSkill || searchQuery ? "(Active)" : ""}
 				</Button>
 			</Affix>
 		</Container>

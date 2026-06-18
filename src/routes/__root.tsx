@@ -1,11 +1,4 @@
-import {
-	Button,
-	Container,
-	MantineProvider,
-	Stack,
-	Text,
-	Title,
-} from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import {
 	createRootRouteWithContext,
@@ -30,7 +23,7 @@ import { amplifyConfig } from "../amplify-config";
 
 Amplify.configure(amplifyConfig);
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -71,8 +64,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	),
 	notFoundComponent: () => (
 		<div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
-			<h1 className="text-3xl font-bold mb-4 text-[var(--sea-ink)]">404 - Page Not Found</h1>
-			<p className="text-[var(--sea-ink-soft)] mb-6">The page you are looking for does not exist.</p>
+			<h1 className="text-3xl font-bold mb-4 text-[var(--sea-ink)]">
+				404 - Page Not Found
+			</h1>
+			<p className="text-[var(--sea-ink-soft)] mb-6">
+				The page you are looking for does not exist.
+			</p>
 			<a
 				href="/"
 				className="px-6 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition"
@@ -83,10 +80,17 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 	),
 	errorComponent: ({ error }: { error: Error }) => (
 		<div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
-			<h1 className="text-3xl font-bold mb-4 text-[var(--sea-ink)]">Something went wrong</h1>
-			<p className="text-red-600 font-semibold mb-2">{error?.message || "An unexpected error occurred"}</p>
-			<p className="text-sm text-[var(--sea-ink-soft)] mb-6">Check client logs/console for details.</p>
+			<h1 className="text-3xl font-bold mb-4 text-[var(--sea-ink)]">
+				Something went wrong
+			</h1>
+			<p className="text-red-600 font-semibold mb-2">
+				{error?.message || "An unexpected error occurred"}
+			</p>
+			<p className="text-sm text-[var(--sea-ink-soft)] mb-6">
+				Check client logs/console for details.
+			</p>
 			<button
+				type="button"
 				onClick={() => window.location.reload()}
 				className="px-6 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition cursor-pointer"
 			>

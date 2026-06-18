@@ -1,11 +1,11 @@
+import { Container, Stack, Tabs, Text, Title } from "@mantine/core";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { Award, Briefcase, GraduationCap } from "lucide-react";
 import { useState } from "react";
-import { Container, Stack, Title, Text, Tabs } from "@mantine/core";
-import { Briefcase, GraduationCap, Award } from "lucide-react";
-import ExperienceTab from "../components/admin/ExperienceTab";
-import EducationTab from "../components/admin/EducationTab";
 import CertificationsTab from "../components/admin/CertificationsTab";
+import EducationTab from "../components/admin/EducationTab";
+import ExperienceTab from "../components/admin/ExperienceTab";
 
 export const Route = createFileRoute("/admin")({
 	beforeLoad: async ({ location }) => {
@@ -46,16 +46,25 @@ function AdminDashboard() {
 						Admin Dashboard
 					</Title>
 					<Text size="sm" c="var(--sea-ink-soft)">
-						Manage all your portfolio sections including Work Experience, Education, and Certifications.
+						Manage all your portfolio sections including Work Experience,
+						Education, and Certifications.
 					</Text>
 				</Stack>
 
-				<Tabs value={activeTab} onChange={setActiveTab} variant="outline" radius="md">
+				<Tabs
+					value={activeTab}
+					onChange={setActiveTab}
+					variant="outline"
+					radius="md"
+				>
 					<Tabs.List mb="lg">
 						<Tabs.Tab value="experience" leftSection={<Briefcase size={16} />}>
 							Work Experience
 						</Tabs.Tab>
-						<Tabs.Tab value="education" leftSection={<GraduationCap size={16} />}>
+						<Tabs.Tab
+							value="education"
+							leftSection={<GraduationCap size={16} />}
+						>
 							Education
 						</Tabs.Tab>
 						<Tabs.Tab value="certifications" leftSection={<Award size={16} />}>

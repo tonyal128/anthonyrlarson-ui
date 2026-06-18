@@ -1,37 +1,43 @@
-import { useState } from "react";
 import {
+	Alert,
 	Badge,
 	Button,
 	Card,
 	Group,
+	Loader,
 	Modal,
+	SimpleGrid,
 	Stack,
 	Text,
-	TextInput,
 	Textarea,
+	TextInput,
 	Title,
-	Loader,
-	Alert,
-	SimpleGrid,
 } from "@mantine/core";
 import {
+	AlertCircle,
+	Check,
+	Edit,
+	GraduationCap,
 	Plus,
 	Trash2,
-	Edit,
-	Check,
-	AlertCircle,
-	GraduationCap,
 } from "lucide-react";
+import { useState } from "react";
 import {
-	useEducationQuery,
-	useCreateEducationMutation,
-	useUpdateEducationMutation,
-	useDeleteEducationMutation,
 	type EducationRecord,
+	useCreateEducationMutation,
+	useDeleteEducationMutation,
+	useEducationQuery,
+	useUpdateEducationMutation,
 } from "../../hooks/useEducationCertifications";
 
 export default function EducationTab() {
-	const { data: educations = [], isLoading, isError, error, refetch } = useEducationQuery();
+	const {
+		data: educations = [],
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useEducationQuery();
 
 	const createMutation = useCreateEducationMutation();
 	const updateMutation = useUpdateEducationMutation();
@@ -39,7 +45,10 @@ export default function EducationTab() {
 
 	const [opened, setOpened] = useState(false);
 	const [editingEdu, setEditingEdu] = useState<EducationRecord | null>(null);
-	const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+	const [statusMessage, setStatusMessage] = useState<{
+		type: "success" | "error";
+		text: string;
+	} | null>(null);
 
 	// Form State
 	const [eduDegree, setEduDegree] = useState("");
@@ -96,7 +105,10 @@ export default function EducationTab() {
 			}
 			setOpened(false);
 		} catch (err) {
-			showStatus("error", err instanceof Error ? err.message : "Failed to save education record.");
+			showStatus(
+				"error",
+				err instanceof Error ? err.message : "Failed to save education record.",
+			);
 		}
 	};
 
@@ -106,7 +118,12 @@ export default function EducationTab() {
 				await deleteMutation.mutateAsync(id);
 				showStatus("success", "Education record deleted successfully!");
 			} catch (err) {
-				showStatus("error", err instanceof Error ? err.message : "Failed to delete education record.");
+				showStatus(
+					"error",
+					err instanceof Error
+						? err.message
+						: "Failed to delete education record.",
+				);
 			}
 		}
 	};
@@ -130,7 +147,13 @@ export default function EducationTab() {
 			{/* Status Message */}
 			{statusMessage && (
 				<Alert
-					icon={statusMessage.type === "success" ? <Check size={16} /> : <AlertCircle size={16} />}
+					icon={
+						statusMessage.type === "success" ? (
+							<Check size={16} />
+						) : (
+							<AlertCircle size={16} />
+						)
+					}
 					color={statusMessage.type === "success" ? "green" : "red"}
 					title={statusMessage.type === "success" ? "Success" : "Error"}
 					withCloseButton
@@ -146,11 +169,28 @@ export default function EducationTab() {
 					<Loader size="lg" />
 				</Group>
 			) : isError ? (
-				<Card shadow="sm" radius="lg" className="island-shell" p="xl" style={{ border: "1px solid var(--mantine-color-red-light)" }}>
+				<Card
+					shadow="sm"
+					radius="lg"
+					className="island-shell"
+					p="xl"
+					style={{ border: "1px solid var(--mantine-color-red-light)" }}
+				>
 					<Stack align="center" gap="md">
-						<Text c="red" fw={600}>Failed to load education items.</Text>
-						<Text size="sm" c="dimmed">{error instanceof Error ? error.message : "Unknown error occurred"}</Text>
-						<Button size="sm" color="red" variant="light" onClick={() => refetch()}>
+						<Text c="red" fw={600}>
+							Failed to load education items.
+						</Text>
+						<Text size="sm" c="dimmed">
+							{error instanceof Error
+								? error.message
+								: "Unknown error occurred"}
+						</Text>
+						<Button
+							size="sm"
+							color="red"
+							variant="light"
+							onClick={() => refetch()}
+						>
 							Retry
 						</Button>
 					</Stack>
@@ -159,8 +199,12 @@ export default function EducationTab() {
 				<Card shadow="sm" radius="lg" className="island-shell" p="xl">
 					<Stack align="center" py="xl" gap="md">
 						<GraduationCap size={40} className="text-gray-400" />
-						<Text c="dimmed" fw={500}>No education items found.</Text>
-						<Button variant="light" onClick={handleOpenAdd}>Add education record</Button>
+						<Text c="dimmed" fw={500}>
+							No education items found.
+						</Text>
+						<Button variant="light" onClick={handleOpenAdd}>
+							Add education record
+						</Button>
 					</Stack>
 				</Card>
 			) : (
@@ -172,7 +216,11 @@ export default function EducationTab() {
 							radius="lg"
 							className="island-shell"
 							p="xl"
-							style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "space-between",
+							}}
 						>
 							<Stack gap="sm">
 								<Group justify="space-between">
@@ -190,7 +238,12 @@ export default function EducationTab() {
 									{edu.period}
 								</Text>
 								{edu.description && (
-									<Text size="sm" c="var(--sea-ink-soft)" mt="xs" style={{ whiteSpace: "pre-line" }}>
+									<Text
+										size="sm"
+										c="var(--sea-ink-soft)"
+										mt="xs"
+										style={{ whiteSpace: "pre-line" }}
+									>
 										{edu.description}
 									</Text>
 								)}

@@ -1,9 +1,12 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
-import { Home } from "./index";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	useCertificationsQuery,
+	useEducationQuery,
+} from "../hooks/useEducationCertifications";
 import { useExperiencesQuery } from "../hooks/useExperiences";
-import { useEducationQuery, useCertificationsQuery } from "../hooks/useEducationCertifications";
+import { Home } from "./index";
 
 // Mock the hooks
 vi.mock("../hooks/useExperiences", () => ({
@@ -27,7 +30,10 @@ const mockExperiences = [
 			experience: [
 				{
 					text: "Built modern web apps",
-					technologies: [{ name: "React", tags: [] }, { name: "TypeScript", tags: [] }],
+					technologies: [
+						{ name: "React", tags: [] },
+						{ name: "TypeScript", tags: [] },
+					],
 				},
 				{
 					text: "Deployed to cloud",
@@ -46,7 +52,10 @@ const mockExperiences = [
 			experience: [
 				{
 					text: "Created APIs",
-					technologies: [{ name: "NodeJS", tags: [] }, { name: "AWS", tags: [] }],
+					technologies: [
+						{ name: "NodeJS", tags: [] },
+						{ name: "AWS", tags: [] },
+					],
 				},
 			],
 		},
@@ -56,7 +65,7 @@ const mockExperiences = [
 describe("Home Component", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		
+
 		// Setup mock returns
 		(useExperiencesQuery as any).mockReturnValue({
 			data: mockExperiences,
@@ -80,7 +89,7 @@ describe("Home Component", () => {
 		return render(
 			<MantineProvider>
 				<Home />
-			</MantineProvider>
+			</MantineProvider>,
 		);
 	};
 
@@ -103,14 +112,14 @@ describe("Home Component", () => {
 	it("triggers window.print when Export as Resume is clicked", () => {
 		// Mock window.print
 		const printMock = vi.spyOn(window, "print").mockImplementation(() => {});
-		
+
 		renderComponent();
-		
+
 		const exportBtn = screen.getByText("Export as Resume");
 		fireEvent.click(exportBtn);
-		
+
 		expect(printMock).toHaveBeenCalledOnce();
-		
+
 		printMock.mockRestore();
 	});
 
